@@ -41,13 +41,13 @@ echo "Starting k-mer analysis..."
 cd setup/metaGrouper
 
 python metagrouper.py \
-    --input ../../samples/subset_50 \
+    ../../samples/subset_50 \
     --output ../../results/kmer_groups \
     --assembly-tools megahit \
     --similarity-threshold 0.3 \
     --min-group-size 2 \
     --max-group-size 5 \
-    --threads 16 \
+    --processes 16 \
     --verbose
 
 echo "MetaGrouper completed: $(date)"
