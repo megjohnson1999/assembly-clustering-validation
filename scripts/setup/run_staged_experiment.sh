@@ -85,9 +85,11 @@ mkdir -p $RESULTS_DIR/{kmer_groups,random_groups,assemblies,final_analysis}
 # Copy scripts
 echo "Copying experiment scripts..."
 cp scripts/assembly/*.py $SCRIPTS_DIR/
+cp scripts/assembly/*.sh $SCRIPTS_DIR/ 2>/dev/null || true
 cp scripts/analysis/*.py $SCRIPTS_DIR/
 cp scripts/utils/*.py $SCRIPTS_DIR/
 chmod +x $SCRIPTS_DIR/*.py
+chmod +x $SCRIPTS_DIR/*.sh 2>/dev/null || true
 
 cd $BASE_DIR
 
@@ -128,7 +130,7 @@ echo "✓ Sample selection complete"
 echo ""
 echo "Step 2: Running MetaGrouper k-mer analysis..."
 
-METAGROUPER_JOB=$(sbatch --parsable scripts/assembly/run_metagrouper.sh)
+METAGROUPER_JOB=$(sbatch --parsable scripts/run_metagrouper.sh)
 check_job_status $METAGROUPER_JOB "MetaGrouper k-mer analysis" || exit 1
 
 # Step 3: Generate multiple random groupings (same as before)
