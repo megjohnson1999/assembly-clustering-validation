@@ -40,7 +40,7 @@ echo "Processing $n_samples samples"
 echo "Starting k-mer analysis..."
 cd setup/metaGrouper
 
-python -m metagrouper_package.main \
+python metagrouper.py \
     --input ../../samples/subset_50 \
     --output ../../results/kmer_groups \
     --assembly-tools megahit \
