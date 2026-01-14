@@ -1,0 +1,144 @@
+# Staged Assembly Validation Configuration
+# Hecatomb-style workflow for validating k-mer clustering vs random grouping
+
+experiment:
+  name: "staged_assembly_validation_50_samples"
+  description: "Testing k-mer clustering vs random grouping using staged assembly workflow (MEGAHIT → concatenate → Flye)"
+  random_seed: 42
+
+samples:
+  input_directory: "/lts/sahlab/data4/megan/RC2_rrna_removed_reads"
+  file_pattern: "{sample_id}_rrna_removed_R{1,2}.fastq"
+  subset_size: 50
+  selection_seed: 42
+
+clustering:
+  method: "metagrouper_kmer"
+  tool_path: "setup/metaGrouper"
+  similarity_threshold: 0.3
+  min_group_size: 2
+  max_group_size: 5
+  threads: 16
+
+# Staged assembly workflow
+assembly:
+  workflow: "staged"  # MEGAHIT → concatenate → Flye
+
+  # Stage 1: MEGAHIT assemblies
+  megahit:
+    # Individual sample assemblies
+    individual:
+      threads: 8
+      memory: "32G"
+      time_limit: "12:00:00"
+      k_min: 45
+      k_max: 225
+      k_step: 26
+      min_count: 2
+      min_contig_len: 500
+
+    # Grouped assemblies (k-mer and random)
+    grouped:
+      threads: 16
+      memory: "64G"
+      time_limit: "24:00:00"
+      k_min: 45
+      k_max: 225
+      k_step: 26
+      min_count: 2
+      min_contig_len: 500
+
+    # Global assembly (all samples)
+    global:
+      threads: 20
+      memory: "128G"
+      time_limit: "36:00:00"
+      k_min: 45
+      k_max: 225
+      k_step: 26
+      min_count: 2
+      min_contig_len: 500
+
+  # Stage 2: Concatenation (simple, fast)
+  concatenation:
+    threads: 2
+    memory: "8G"
+    time_limit: "2:00:00"
+
+  # Stage 3: Flye meta-assembly
+  flye:
+    threads: 16
+    memory: "64G"
+    time_limit: "24:00:00"
+    genome_size: "1g"
+    enable_plasmids: true
+    subassemblies_mode: true  # Use --subassemblies flag
+
+analysis:
+  # Random grouping replicates
+  random_seeds: [42, 43, 44, 45, 46]
+
+  # Assembly quality metrics to compare
+  metrics:
+    - "total_length"
+    - "n_contigs"
+    - "n50"
+    - "n75"
+    - "n90"
+    - "max_contig"
+    - "contigs_1kb+"
+    - "contigs_5kb+"
+    - "contigs_10kb+"
+    - "contigs_50kb+"
+    - "contigs_100kb+"
+
+  statistical_tests:
+    - "percentile_ranking"
+    - "improvement_ratio"
+    - "z_score"
+
+  significance_threshold: 0.05
+
+cluster:
+  scheduler: "slurm"
+  email: "megan.j@your-institution.edu"
+  conda_path: "/ref/sahlab/software/miniforge3/bin/activate"
+  environment: "coassembly_env"  # Updated environment name
+
+output:
+  base_directory: "results"
+
+  # Final assemblies (8 total)
+  final_assemblies:
+    - "individual_meta_assembly.fasta"
+    - "random_42_meta_assembly.fasta"
+    - "random_43_meta_assembly.fasta"
+    - "random_44_meta_assembly.fasta"
+    - "random_45_meta_assembly.fasta"
+    - "random_46_meta_assembly.fasta"
+    - "kmer_meta_assembly.fasta"
+    - "global_assembly.fasta"
+
+  # Cleanup strategy
+  cleanup:
+    keep_intermediate_megahit: false    # Remove after concatenation
+    keep_concatenated_files: false     # Remove after Flye
+    keep_flye_intermediates: false     # Keep only final assemblies
+    compress_logs: true
+
+# Computational resources summary
+resources:
+  estimated_core_hours:
+    megahit_individual: 400    # 50 × 8 cores × 1 hour average
+    megahit_grouped: 960       # ~60 groups × 16 cores × 1 hour average
+    megahit_global: 720        # 1 × 20 cores × 36 hours
+    concatenation: 16          # 7 × 2 cores × 1 hour
+    flye_meta: 1120           # 7 × 16 cores × 10 hours average
+    total: 3216               # Much more efficient than original ~27,000
+
+  estimated_storage:
+    intermediate_assemblies: "200GB"    # Cleaned up after use
+    final_assemblies: "5GB"            # 8 assemblies kept
+    logs: "1GB"
+
+  estimated_runtime: "2-3 days"  # Much faster than original 1-2 weeks
