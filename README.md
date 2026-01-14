@@ -1,50 +1,76 @@
-# Assembly Clustering Validation
+# MetaGrouper Assembly Clustering Validation
 
-A robust experimental framework for testing whether similarity-based clustering approaches outperform random grouping for metagenomic co-assembly.
+**Research Question:** Does k-mer-based sample clustering produce better metagenomic assemblies than random grouping?
 
-## 🧪 The Scientific Question
+## Overview
 
-**Does k-mer similarity clustering produce better co-assemblies than random chance?**
+This repository contains a validation framework for testing whether MetaGrouper's k-mer clustering approach produces superior co-assemblies compared to random sample grouping. The experiment uses a staged assembly workflow (MEGAHIT → concatenate → Flye meta-assembly) to generate comparable final assemblies across different grouping strategies.
 
-This repository provides a publication-quality experimental design to definitively answer this question for any clustering method.
+## Current Implementation
 
-## 🎯 Experimental Design
+**What this tool does:**
+- ✅ Tests MetaGrouper k-mer clustering against 5 random grouping baselines
+- ✅ Implements staged assembly workflow matching hecatomb patterns
+- ✅ Runs efficiently on SLURM clusters (2-3 days vs weeks)
+- ✅ Generates statistical comparison of assembly quality metrics
+- ✅ Provides clear recommendation on clustering effectiveness
 
-### Four-Condition Comparison
+**Validation scope:**
+- **Sample size**: 50 paired-end metagenomic samples
+- **Clustering method**: MetaGrouper k-mer similarity (threshold=0.3)
+- **Assembly workflow**: MEGAHIT → concatenation → Flye meta-assembly
+- **Comparison**: 8 final meta-assemblies (Individual, Random×5, K-mer, Global)
 
-1. **Individual Assemblies** (baseline)
-   - Each sample assembled separately
-   - Establishes minimum cooperation baseline
+## Experimental Design
 
-2. **Random Groupings** (null hypothesis)
-   - 5 different random groupings with identical structure to test method
-   - Provides statistical distribution for comparison
+**Four-condition comparison:**
+1. **Individual approach**: Each sample assembled separately, then meta-assembled
+2. **Random grouping**: 5 different random sample groupings (seeds 42-46)
+3. **K-mer clustering**: MetaGrouper similarity-based grouping
+4. **Global assembly**: All samples co-assembled together
 
-3. **Similarity Clustering** (test hypothesis)
-   - Groups samples by k-mer similarity (or other similarity metric)
-   - The method being tested
+**Statistical approach:**
+- Multiple random baselines ensure robust null hypothesis testing
+- Assembly quality metrics: N50, total length, contig counts, completeness
+- Statistical significance testing with effect size calculations
 
-4. **Global Assembly** (maximum cooperation reference)
-   - All samples assembled together
-   - Establishes maximum cooperation potential
+## Expected Outcomes
 
-### Statistical Analysis
+**Definitive answer to:** "Should I use k-mer clustering or is random grouping just as good?"
 
-The framework determines if similarity clustering significantly outperforms random grouping by comparing:
-- Assembly quality metrics (N50, total length, contig count, etc.)
-- Performance across multiple assembly quality dimensions
-- Statistical significance through comparison with random distribution
+**Possible results:**
+- **Strong evidence**: K-mer clustering significantly outperforms random (p<0.05, large effect size)
+- **Marginal evidence**: Small but consistent improvements (cost/benefit decision needed)
+- **No evidence**: Random grouping performs equivalently (focus efforts elsewhere)
 
-## 🔬 Key Features
+## Current Limitations
 
-- **Tool-agnostic**: Can test any clustering method (MetaGrouper, MMseqs2, custom approaches)
-- **Statistically robust**: Multiple random replicates instead of single comparisons
-- **Comprehensive metrics**: Multiple assembly quality measures
-- **Scalable**: Designed for 50-1000+ samples
-- **Reproducible**: Complete automation with parameter tracking
-- **Publication-ready**: Generates publication-quality analysis reports
+**This is a research validation, not a production tool:**
+- ⚠️ **Single clustering method**: Only tests MetaGrouper (not CONCOCT, MaxBin, etc.)
+- ⚠️ **Limited scale**: Validated on 50 samples (not 100-1000+ samples)
+- ⚠️ **Preliminary results**: Requires peer review and broader validation
+- ⚠️ **Specific workflow**: Designed for hecatomb-style staged assembly
 
-## 📁 Repository Structure
+## Quick Start
+
+**Prerequisites:**
+- SLURM cluster with `metagrouper_env` and `coassembly_env`
+- MetaGrouper installed in `setup/metaGrouper/`
+- Paired-end metagenomic reads
+
+**Run validation:**
+```bash
+# Setup experiment workspace
+bash scripts/setup/setup_experiment_fixed.sh
+
+# Run complete validation (2-3 days)
+cd metagrouper_validation/
+bash scripts/setup/run_staged_experiment.sh
+
+# Results in: results/final_analysis/
+```
+
+## Repository Structure
 
 ```
 ├── scripts/
@@ -52,128 +78,43 @@ The framework determines if similarity clustering significantly outperforms rand
 │   ├── assembly/        # Assembly command generation and execution
 │   ├── analysis/        # Quality assessment and statistical analysis
 │   └── utils/           # Sample selection and grouping utilities
-├── configs/             # Experimental parameters and configurations
-├── results/             # Experimental outputs (gitignored large files)
-├── analysis/            # Post-experiment analysis notebooks
-├── docs/                # Detailed documentation
-└── tests/               # Unit tests for experimental scripts
+├── configs/             # Experimental parameters (documentation)
+├── setup/               # MetaGrouper installation location
+└── README.md           # This file
 ```
 
-## 🚀 Quick Start
+## Research Context
 
-### 1. Clone and Setup
+**Status**: Active validation study (January 2026)
+**Institution**: Sahlab computational biology research
+**Use case**: Method validation for viral metagenomic assembly strategies
 
-```bash
-git clone https://github.com/yourusername/assembly-clustering-validation.git
-cd assembly-clustering-validation
+**This framework provides:**
+- Reproducible methodology for testing co-assembly strategies
+- Statistical framework for comparing clustering approaches
+- Working example that can be extended to other clustering tools
+- Foundation for scaling to larger sample sizes
 
-# Configure for your system
-cp configs/default_config.yaml configs/my_experiment.yaml
-# Edit configs/my_experiment.yaml with your paths and parameters
+## Future Development
+
+**Planned enhancements:**
+- 🔄 Support for multiple clustering methods (CONCOCT, MaxBin2, VAMB)
+- 🔄 Scaling validation to 100-1000+ samples
+- 🔄 CheckV integration for viral genome recovery analysis
+- 🔄 Additional assembly workflows (SPAdes, Unicycler)
+- 🔄 Publication and community peer review
+
+**Contributing**: This is currently a single-researcher project. Contact for collaboration opportunities.
+
+## Citation
+
 ```
-
-### 2. Run Complete Experiment
-
-```bash
-# Full automated experiment
-bash scripts/setup/run_full_experiment.sh configs/my_experiment.yaml
-
-# OR run individual steps:
-python scripts/utils/select_samples.py --config configs/my_experiment.yaml
-sbatch scripts/assembly/run_clustering_analysis.sh
-python scripts/utils/create_random_groups.py --config configs/my_experiment.yaml
-python scripts/assembly/generate_all_assembly_commands.py --config configs/my_experiment.yaml
-# Submit assembly jobs...
-python scripts/analysis/assess_all_conditions.py --config configs/my_experiment.yaml
+Assembly Clustering Validation Framework (2026)
+Sahlab Computational Biology
+GitHub: megjohnson1999/assembly-clustering-validation
+Status: Research validation - results pending peer review
 ```
-
-### 3. Analyze Results
-
-```bash
-# View the definitive answer
-cat results/comprehensive_analysis/comprehensive_analysis_report.txt
-
-# Detailed statistics
-open results/comprehensive_analysis/detailed_assembly_statistics.csv
-```
-
-## 📊 Expected Outcomes
-
-The analysis classifies results into four categories:
-
-- **🎉 STRONGLY PROMISING**: Clustering beats even best random groupings
-- **✅ PROMISING**: Clustering consistently beats average random performance
-- **⚠️ MIXED**: Inconsistent performance, needs refinement
-- **❌ NOT PROMISING**: Doesn't beat random, fundamental issues
-
-## ⚙️ Configuration
-
-Edit `configs/my_experiment.yaml` to customize:
-
-```yaml
-# Sample configuration
-samples:
-  input_directory: "/path/to/fastq/files"
-  file_pattern: "{sample_id}_R{1,2}.fastq.gz"
-  subset_size: 50
-  random_seed: 42
-
-clustering:
-  method: "kmer"  # or "mash", "sourmash", etc.
-  similarity_threshold: 0.3
-  min_group_size: 2
-  max_group_size: 5
-
-assembly:
-  assembler: "megahit"  # or "spades", "flye"
-  threads: 16
-  memory: "120G"
-
-analysis:
-  random_seeds: [42, 43, 44, 45, 46]
-  metrics: ["n50", "total_length", "n_contigs", "max_contig"]
-```
-
-## 🧬 Clustering Methods Supported
-
-- **K-mer clustering** (MetaGrouper, Sourmash)
-- **Sequence similarity** (MMseqs2, DIAMOND)
-- **Taxonomic clustering** (Kraken2 + grouping)
-- **Custom methods** (via plugin interface)
-
-## 📝 Publications & Citations
-
-If you use this framework in your research, please cite:
-
-```bibtex
-@software{assembly_clustering_validation,
-  title = {Assembly Clustering Validation Framework},
-  author = {Your Name},
-  year = {2024},
-  url = {https://github.com/yourusername/assembly-clustering-validation}
-}
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## 📧 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/assembly-clustering-validation/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/assembly-clustering-validation/discussions)
-- **Email**: your.email@institution.edu
-
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🏃‍♀️ Current Example: MetaGrouper Validation
-
-This repository currently contains a complete validation of MetaGrouper's k-mer clustering approach. See `configs/metagrouper_example.yaml` and `docs/metagrouper_case_study.md` for details.
-
-**Research Question**: Does MetaGrouper's k-mer clustering outperform random grouping for metagenomic co-assembly?
-
-**Status**: Ready to run comprehensive validation on 50-1000 samples.
+**Key insight**: This framework definitively tests whether k-mer clustering solves a real problem in metagenomic assembly, providing evidence-based guidance for method selection.
