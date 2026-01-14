@@ -1,0 +1,32 @@
+# Core dependencies for assembly clustering validation
+
+# Data manipulation and analysis
+pandas>=1.3.0
+numpy>=1.20.0
+scipy>=1.7.0
+
+# Scientific computing and statistics
+scikit-learn>=1.0.0
+matplotlib>=3.3.0
+seaborn>=0.11.0
+plotly>=5.0.0
+
+# Bioinformatics
+biopython>=1.78
+
+# Configuration and utilities
+pyyaml>=5.4.0
+psutil>=5.8.0
+
+# Dimensionality reduction (optional)
+umap-learn>=0.5.0
+
+# Optional assembly tools (install separately)
+# megahit - conda install -c bioconda megahit
+# spades - conda install -c bioconda spades
+# flye - conda install -c bioconda flye
+
+# Development dependencies (optional)
+pytest>=6.0.0
+black>=21.0.0
+flake8>=3.9.0

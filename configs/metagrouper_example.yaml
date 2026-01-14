@@ -1,0 +1,70 @@
+# MetaGrouper Validation Configuration
+# Example configuration for validating MetaGrouper's k-mer clustering approach
+
+experiment:
+  name: "metagrouper_validation_50_samples"
+  description: "Testing MetaGrouper k-mer clustering vs random grouping on 50 metagenomic samples"
+  random_seed: 42
+
+samples:
+  input_directory: "/lts/sahlab/data4/megan/RC2_rrna_removed_reads"
+  file_pattern: "{sample_id}_rrna_removed_R{1,2}.fastq"
+  subset_size: 50
+  selection_seed: 42
+
+clustering:
+  method: "metagrouper_kmer"
+  tool_path: "setup/metaGrouper"
+  similarity_threshold: 0.3
+  min_group_size: 2
+  max_group_size: 5
+  threads: 16
+
+assembly:
+  assembler: "megahit"
+  individual:
+    threads: 8
+    memory: "32G"
+    time_limit: "8:00:00"
+  grouped:
+    threads: 16
+    memory: "120G"
+    time_limit: "24:00:00"
+  global:
+    threads: 20
+    memory: "200G"
+    time_limit: "48:00:00"
+
+  # MEGAHIT-specific parameters
+  megahit_params:
+    min_contig_len: 500
+    k_list: "21,29,39,59,79,99"
+
+analysis:
+  random_seeds: [42, 43, 44, 45, 46]
+  metrics:
+    - "total_length"
+    - "n_contigs"
+    - "n50"
+    - "n75"
+    - "n90"
+    - "max_contig"
+    - "contigs_1kb+"
+    - "contigs_10kb+"
+
+  statistical_tests:
+    - "mannwhitneyu"
+    - "permutation_test"
+
+  significance_threshold: 0.05
+
+cluster:
+  scheduler: "slurm"
+  email: "megan.j@your-institution.edu"
+  conda_path: "/ref/sahlab/software/miniforge3/bin/activate"
+  environment: "metagrouper_env"
+
+output:
+  base_directory: "results"
+  keep_intermediate: false
+  compress_assemblies: true
