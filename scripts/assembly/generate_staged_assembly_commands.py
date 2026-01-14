@@ -317,7 +317,7 @@ def write_megahit_script(commands, suffix, scripts_dir, threads, memory, time_li
 #SBATCH --output=logs/megahit_{suffix}_%A_%a.out
 #SBATCH --error=logs/megahit_{suffix}_%A_%a.err
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=megan.j@your-institution.edu
+#SBATCH --mail-user=megan.j@wustl.edu
 
 echo "Starting MEGAHIT {suffix} assembly: $(date)"
 echo "Job ID: $SLURM_JOB_ID"
@@ -433,7 +433,7 @@ def write_simple_script(commands, script_name, scripts_dir, threads, memory, tim
 #SBATCH --output=logs/{script_name.replace('.sh', '')}_%A_%a.out
 #SBATCH --error=logs/{script_name.replace('.sh', '')}_%A_%a.err
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=megan.j@your-institution.edu
+#SBATCH --mail-user=megan.j@wustl.edu
 
 echo "Starting {script_name.replace('.sh', '')} job: $(date)"
 echo "Job ID: $SLURM_JOB_ID"

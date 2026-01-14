@@ -6,7 +6,7 @@
 #SBATCH --output=logs/metagrouper_%j.out
 #SBATCH --error=logs/metagrouper_%j.err
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=megan.j@your-institution.edu  # Edit this email
+#SBATCH --mail-user=megan.j@wustl.edu
 
 echo "Starting MetaGrouper analysis: $(date)"
 echo "Job ID: $SLURM_JOB_ID"
