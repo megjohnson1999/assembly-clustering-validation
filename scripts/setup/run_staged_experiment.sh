@@ -128,7 +128,7 @@ echo "✓ Sample selection complete"
 echo ""
 echo "Step 2: Running MetaGrouper k-mer analysis..."
 
-METAGROUPER_JOB=$(sbatch --parsable scripts/run_metagrouper.sh)
+METAGROUPER_JOB=$(sbatch --parsable scripts/assembly/run_metagrouper.sh)
 check_job_status $METAGROUPER_JOB "MetaGrouper k-mer analysis" || exit 1
 
 # Step 3: Generate multiple random groupings (same as before)
