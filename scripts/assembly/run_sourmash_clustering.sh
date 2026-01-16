@@ -48,6 +48,7 @@ echo "🧬 Starting SOURMASH k-mer clustering..."
 echo "  Tool: Sourmash (optimized MinHash implementation)"
 echo "  K-mer size: 21"
 echo "  Scaled: 1000 (sketch compression)"
+echo "  Similarity threshold: 0.1 (permissive - more likely to find clusters)"
 echo "  Expected runtime: ~15-30 minutes"
 echo "  Memory usage: Low (sketches only)"
 echo ""
@@ -55,7 +56,7 @@ echo ""
 python scripts/utils/sourmash_clustering.py \
     samples/subset_50 \
     --output results/kmer_groups \
-    --similarity-threshold 0.3 \
+    --similarity-threshold 0.1 \
     --min-group-size 2 \
     --max-group-size 5 \
     --ksize 21 \

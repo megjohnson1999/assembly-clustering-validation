@@ -135,7 +135,7 @@ def compute_sourmash_distances(sketch_files, output_dir):
     return distance_matrix, sample_names
 
 def cluster_samples(distance_matrix, sample_names,
-                   similarity_threshold=0.3, min_group_size=2, max_group_size=5):
+                   similarity_threshold=0.1, min_group_size=2, max_group_size=5):
     """Apply hierarchical clustering to group samples."""
 
     logging.info(f"Clustering samples (threshold={similarity_threshold})...")
@@ -237,8 +237,8 @@ def main():
     parser.add_argument("sample_dir", help="Directory containing FASTQ files")
     parser.add_argument("-o", "--output", default="results/kmer_groups",
                        help="Output directory")
-    parser.add_argument("--similarity-threshold", type=float, default=0.3,
-                       help="Similarity threshold for grouping (default: 0.3)")
+    parser.add_argument("--similarity-threshold", type=float, default=0.1,
+                       help="Similarity threshold for grouping (default: 0.1)")
     parser.add_argument("--min-group-size", type=int, default=2,
                        help="Minimum group size (default: 2)")
     parser.add_argument("--max-group-size", type=int, default=5,
