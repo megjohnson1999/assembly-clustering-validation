@@ -35,20 +35,25 @@ conda activate coassembly_env
 # Test dependencies
 python -c "import pandas, numpy, sklearn; print('✓ Dependencies available in coassembly_env')"
 
-# Copy scripts to workspace from current repository structure
-echo "Copying experiment scripts..."
-mkdir -p $WORKSPACE/scripts/{setup,assembly,analysis,utils}
+# Link scripts to workspace (always up-to-date with repo)
+echo "Linking experiment scripts (always up-to-date)..."
+mkdir -p $WORKSPACE/scripts
 
-# Copy scripts from the organized structure
-cp scripts/setup/*.sh $WORKSPACE/scripts/setup/ 2>/dev/null || echo "No setup scripts to copy"
-cp scripts/assembly/*.py $WORKSPACE/scripts/assembly/ 2>/dev/null || echo "No assembly python scripts to copy"
-cp scripts/assembly/*.sh $WORKSPACE/scripts/assembly/ 2>/dev/null || echo "No assembly shell scripts to copy"
-cp scripts/analysis/*.py $WORKSPACE/scripts/analysis/ 2>/dev/null || echo "No analysis scripts to copy"
-cp scripts/utils/*.py $WORKSPACE/scripts/utils/ 2>/dev/null || echo "No utility scripts to copy"
+# Remove old scripts directory if it exists (from previous copies)
+if [ -d "$WORKSPACE/scripts" ] && [ ! -L "$WORKSPACE/scripts" ]; then
+    echo "Removing old copied scripts..."
+    rm -rf $WORKSPACE/scripts
+fi
 
-# Also copy any scripts from the main scripts directory
-cp scripts/*.py $WORKSPACE/scripts/ 2>/dev/null || echo "No main scripts to copy"
-cp scripts/*.sh $WORKSPACE/scripts/ 2>/dev/null || echo "No main shell scripts to copy"
+# Create symlink to scripts directory in main repo
+REPO_ROOT=$(pwd)
+if [ ! -L "$WORKSPACE/scripts" ]; then
+    echo "Creating symlink to scripts directory..."
+    ln -sf "$REPO_ROOT/scripts" "$WORKSPACE/scripts"
+    echo "✅ Scripts directory linked (automatically updates with git changes)"
+else
+    echo "✅ Scripts directory already linked"
+fi
 
 # Make scripts executable
 find $WORKSPACE/scripts -name "*.sh" -exec chmod +x {} \; 2>/dev/null
