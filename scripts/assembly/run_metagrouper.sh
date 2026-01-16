@@ -20,10 +20,14 @@ conda activate metagrouper_env
 echo "Python version: $(python --version)"
 echo "Working directory: $(pwd)"
 
-# Check if MetaGrouper is cloned
+# Check if MetaGrouper is available, if not copy from parent directory
 if [ ! -d "setup/metaGrouper" ]; then
-    echo "ERROR: MetaGrouper not found. Please run setup first."
-    exit 1
+    echo "MetaGrouper not found in setup/, copying from parent directory..."
+    mkdir -p setup
+    cp -r ../metagrouper_package setup/metaGrouper
+    cp ../metagrouper.py setup/metaGrouper/
+    chmod +x setup/metaGrouper/metagrouper.py
+    echo "✓ MetaGrouper copied successfully"
 fi
 
 # Check if samples exist
@@ -36,8 +40,11 @@ fi
 n_samples=$(ls samples/subset_50/*_R1.fastq | wc -l)
 echo "Processing $n_samples samples"
 
-# Run MetaGrouper
-echo "Starting k-mer analysis..."
+# Run MetaGrouper with memory-efficient sketching
+echo "Starting OPTIMIZED k-mer analysis..."
+echo "  Using sketching: YES (memory-efficient mode)"
+echo "  Sketch size: 5000 (reduces ~34M k-mers to 5K per sample)"
+echo "  Expected memory reduction: ~99%"
 cd setup/metaGrouper
 
 python metagrouper.py \
@@ -48,6 +55,9 @@ python metagrouper.py \
     --min-group-size 2 \
     --max-group-size 5 \
     --processes 16 \
+    --use-sketching \
+    --sketch-size 5000 \
+    --sampling-method frequency \
     --verbose
 
 echo "MetaGrouper completed: $(date)"
