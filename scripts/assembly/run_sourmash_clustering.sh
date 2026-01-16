@@ -14,18 +14,13 @@ echo "Node: $SLURM_NODELIST"
 
 # Load conda environment
 source /ref/sahlab/software/miniforge3/bin/activate
-conda activate coassembly_env
+conda activate metagrouper_env
 
 # Verify environment
 echo "Python version: $(python --version)"
 echo "Working directory: $(pwd)"
 
-# Check if sourmash is available
-if ! command -v sourmash &> /dev/null; then
-    echo "Installing sourmash..."
-    conda install -c bioconda sourmash -y
-fi
-
+# Verify sourmash is available
 echo "Sourmash version: $(sourmash --version)"
 
 # Check if samples exist
@@ -105,10 +100,7 @@ else
     echo "Checking for common issues..."
 
     # Check for dependency issues
-    if ! command -v sourmash &> /dev/null; then
-        echo "DEPENDENCY ERROR: Sourmash not installed"
-        echo "Try: conda install -c bioconda sourmash"
-    fi
+    echo "Sourmash version: $(sourmash --version 2>/dev/null || echo 'NOT FOUND')"
 
     # Check for input issues
     if [ ! -f "scripts/utils/sourmash_clustering.py" ]; then
