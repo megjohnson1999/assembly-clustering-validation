@@ -30,11 +30,12 @@ if [ ! -d "samples/subset_50" ] || [ -z "$(ls -A samples/subset_50)" ]; then
 fi
 
 # Count samples
-n_samples=$(ls samples/subset_50/*_R1.fastq 2>/dev/null | wc -l)
+n_samples=$(ls samples/subset_50/*_rrna_removed_R1.fastq 2>/dev/null | wc -l)
 echo "Processing $n_samples samples with Sourmash"
 
 if [ "$n_samples" -eq 0 ]; then
-    echo "ERROR: No R1 fastq files found in samples/subset_50/"
+    echo "ERROR: No _rrna_removed_R1.fastq files found in samples/subset_50/"
+    echo "Expected naming pattern: {sample_id}_rrna_removed_R{1,2}.fastq"
     exit 1
 fi
 

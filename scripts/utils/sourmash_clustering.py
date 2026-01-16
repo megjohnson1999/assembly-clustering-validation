@@ -27,16 +27,16 @@ def create_sourmash_sketches(sample_dir, output_dir, ksize=21, scaled=1000):
     sketches_dir = output_path / "sketches"
     sketches_dir.mkdir(parents=True, exist_ok=True)
 
-    # Find all R1 files (paired-end samples)
-    sample_files = list(Path(sample_dir).glob("*_R1.fastq"))
+    # Find all R1 files (paired-end samples with _rrna_removed naming)
+    sample_files = list(Path(sample_dir).glob("*_rrna_removed_R1.fastq"))
 
     logging.info(f"Creating sourmash sketches for {len(sample_files)} samples...")
 
     sketch_files = []
 
     for r1_file in sample_files:
-        sample_id = r1_file.stem.replace("_R1", "")
-        r2_file = r1_file.parent / f"{sample_id}_R2.fastq"
+        sample_id = r1_file.stem.replace("_rrna_removed_R1", "")
+        r2_file = r1_file.parent / f"{sample_id}_rrna_removed_R2.fastq"
 
         if not r2_file.exists():
             logging.warning(f"Missing R2 file for {sample_id}, skipping")
