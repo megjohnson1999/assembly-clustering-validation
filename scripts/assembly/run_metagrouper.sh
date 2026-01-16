@@ -41,12 +41,12 @@ n_samples=$(ls samples/subset_50/*_R1.fastq | wc -l)
 echo "Processing $n_samples samples"
 
 # Run MetaGrouper with memory-efficient sketching
-echo "Starting OPTIMIZED k-mer analysis..."
-echo "  Using sketching: YES (memory-efficient mode)"
-echo "  Sketch size: 1000 (top 1K k-mers per sample)"
-echo "  Sampling method: reservoir (single-pass, fast)"
-echo "  Max reads: 50K per sample (subsample for speed)"
-echo "  Expected speedup: ~5x faster than frequency sampling"
+echo "Starting MetaGrouper k-mer analysis (SCIENTIFICALLY VALID)..."
+echo "  Using sketching: YES (99% memory reduction)"
+echo "  Sketch size: 1000 (most frequent k-mers per sample)"
+echo "  Sampling method: frequency (MetaGrouper's intended approach)"
+echo "  Processing: Full samples (maintains biological signal)"
+echo "  Expected runtime: ~4 hours for 25 samples"
 cd setup/metaGrouper
 
 python metagrouper.py \
@@ -59,8 +59,7 @@ python metagrouper.py \
     --processes 16 \
     --use-sketching \
     --sketch-size 1000 \
-    --sampling-method reservoir \
-    --max-reads 50000 \
+    --sampling-method frequency \
     --verbose
 
 echo "MetaGrouper completed: $(date)"
