@@ -21,7 +21,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def create_sourmash_sketches(sample_dir, output_dir, ksize=21, scaled=1000):
-    """Create sourmash sketches for all samples."""
+    """Create sourmash sketches for all samples using parameter string format."""
 
     output_path = Path(output_dir)
     sketches_dir = output_path / "sketches"
@@ -57,8 +57,7 @@ def create_sourmash_sketches(sample_dir, output_dir, ksize=21, scaled=1000):
             str(r1_file), str(r2_file),
             '-o', str(sketch_file),
             '--name', sample_id,
-            '-k', str(ksize),
-            '--scaled', str(scaled)
+            '-p', f'k={ksize},scaled={scaled}'
         ]
 
         logging.info(f"Creating sketch for {sample_id}...")
