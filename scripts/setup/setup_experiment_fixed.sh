@@ -41,7 +41,8 @@ mkdir -p $WORKSPACE/scripts/{setup,assembly,analysis,utils}
 
 # Copy scripts from the organized structure
 cp scripts/setup/*.sh $WORKSPACE/scripts/setup/ 2>/dev/null || echo "No setup scripts to copy"
-cp scripts/assembly/*.py $WORKSPACE/scripts/assembly/ 2>/dev/null || echo "No assembly scripts to copy"
+cp scripts/assembly/*.py $WORKSPACE/scripts/assembly/ 2>/dev/null || echo "No assembly python scripts to copy"
+cp scripts/assembly/*.sh $WORKSPACE/scripts/assembly/ 2>/dev/null || echo "No assembly shell scripts to copy"
 cp scripts/analysis/*.py $WORKSPACE/scripts/analysis/ 2>/dev/null || echo "No analysis scripts to copy"
 cp scripts/utils/*.py $WORKSPACE/scripts/utils/ 2>/dev/null || echo "No utility scripts to copy"
 
