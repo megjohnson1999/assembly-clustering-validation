@@ -33,6 +33,7 @@ def create_sourmash_sketches(sample_dir, output_dir, ksize=21, scaled=1000):
     logging.info(f"Creating sourmash sketches for {len(sample_files)} samples...")
 
     sketch_files = []
+    successful_sketches = []
 
     for r1_file in sample_files:
         sample_id = r1_file.stem.replace("_rrna_removed_R1", "")
@@ -43,10 +44,11 @@ def create_sourmash_sketches(sample_dir, output_dir, ksize=21, scaled=1000):
             continue
 
         sketch_file = sketches_dir / f"{sample_id}.sig"
-        sketch_files.append(sketch_file)
 
         if sketch_file.exists():
             logging.info(f"Sketch exists for {sample_id}, skipping")
+            sketch_files.append(sketch_file)
+            successful_sketches.append(sample_id)
             continue
 
         # Create sketch for paired-end sample
@@ -55,7 +57,7 @@ def create_sourmash_sketches(sample_dir, output_dir, ksize=21, scaled=1000):
             str(r1_file), str(r2_file),
             '-o', str(sketch_file),
             '--name', sample_id,
-            '--ksize', str(ksize),
+            '-k', str(ksize),
             '--scaled', str(scaled)
         ]
 
@@ -64,9 +66,42 @@ def create_sourmash_sketches(sample_dir, output_dir, ksize=21, scaled=1000):
 
         if result.returncode != 0:
             logging.error(f"Failed to create sketch for {sample_id}: {result.stderr}")
+            # Remove partial sketch file if it exists
+            if sketch_file.exists():
+                sketch_file.unlink()
             continue
 
-    logging.info(f"✅ Created {len(sketch_files)} sketches")
+        # Validate sketch file was created properly
+        if not sketch_file.exists() or sketch_file.stat().st_size == 0:
+            logging.error(f"Sketch file for {sample_id} is missing or empty")
+            if sketch_file.exists():
+                sketch_file.unlink()
+            continue
+
+        # Test if sketch can be loaded
+        try:
+            test_cmd = ['sourmash', 'sig', 'describe', str(sketch_file)]
+            test_result = subprocess.run(test_cmd, capture_output=True, text=True)
+            if test_result.returncode != 0:
+                logging.error(f"Sketch for {sample_id} is corrupted: {test_result.stderr}")
+                sketch_file.unlink()
+                continue
+        except Exception as e:
+            logging.error(f"Error validating sketch for {sample_id}: {e}")
+            if sketch_file.exists():
+                sketch_file.unlink()
+            continue
+
+        # If we get here, sketch was created successfully
+        sketch_files.append(sketch_file)
+        successful_sketches.append(sample_id)
+
+    logging.info(f"✅ Created {len(successful_sketches)} sketches successfully")
+    logging.info(f"   Successful samples: {successful_sketches}")
+
+    if len(successful_sketches) == 0:
+        raise RuntimeError("No sketches created successfully")
+
     return sketch_files
 
 def compute_sourmash_distances(sketch_files, output_dir):
