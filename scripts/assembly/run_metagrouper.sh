@@ -43,8 +43,10 @@ echo "Processing $n_samples samples"
 # Run MetaGrouper with memory-efficient sketching
 echo "Starting OPTIMIZED k-mer analysis..."
 echo "  Using sketching: YES (memory-efficient mode)"
-echo "  Sketch size: 5000 (reduces ~34M k-mers to 5K per sample)"
-echo "  Expected memory reduction: ~99%"
+echo "  Sketch size: 1000 (top 1K k-mers per sample)"
+echo "  Sampling method: reservoir (single-pass, fast)"
+echo "  Max reads: 50K per sample (subsample for speed)"
+echo "  Expected speedup: ~5x faster than frequency sampling"
 cd setup/metaGrouper
 
 python metagrouper.py \
@@ -56,8 +58,9 @@ python metagrouper.py \
     --max-group-size 5 \
     --processes 16 \
     --use-sketching \
-    --sketch-size 5000 \
-    --sampling-method frequency \
+    --sketch-size 1000 \
+    --sampling-method reservoir \
+    --max-reads 50000 \
     --verbose
 
 echo "MetaGrouper completed: $(date)"
