@@ -221,10 +221,12 @@ def create_metagrouper_output(groups, individual_samples, output_dir, sample_nam
 
         f.write("Group Details:\n")
         for i, group in enumerate(groups):
-            f.write(f"  Group {i+1}: {len(group)} samples - {', '.join(group)}\n")
+            group_str = ', '.join([str(s) for s in group])  # Convert to strings
+            f.write(f"  Group {i+1}: {len(group)} samples - {group_str}\n")
 
         if individual_samples:
-            f.write(f"\nIndividual samples: {', '.join(individual_samples)}\n")
+            individual_str = ', '.join([str(s) for s in individual_samples])  # Convert to strings
+            f.write(f"\nIndividual samples: {individual_str}\n")
 
     logging.info(f"✅ Saved summary report to {summary_file}")
 
