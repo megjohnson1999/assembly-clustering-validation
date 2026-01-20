@@ -52,34 +52,82 @@ def find_all_strategies(groupings_dir):
     return sorted(strategy_files)
 
 
-def generate_megahit_command(sample_pairs, output_dir, job_name, threads=8, memory_gb=32):
-    """Generate a MEGAHIT command for a list of sample pairs."""
+def generate_concatenation_and_megahit_commands(sample_pairs, output_dir, job_name, threads=8, memory_gb=32):
+    """Generate concatenation commands followed by MEGAHIT command for a group of samples."""
     if not sample_pairs:
-        return None
+        return []
 
-    # Collect all R1 and R2 files
-    r1_files = []
-    r2_files = []
+    commands = []
 
-    for r1, r2 in sample_pairs:
-        r1_files.append(r1)
-        r2_files.append(r2)
+    # For multiple samples, first concatenate the reads
+    if len(sample_pairs) > 1:
+        # Collect all R1 and R2 files
+        r1_files = []
+        r2_files = []
 
-    r1_list = ",".join(r1_files)
-    r2_list = ",".join(r2_files)
+        for r1, r2 in sample_pairs:
+            r1_files.append(r1)
+            r2_files.append(r2)
 
-    # MEGAHIT command with optimized parameters
-    command = f"""megahit \\
-    -1 {r1_list} \\
-    -2 {r2_list} \\
-    -o {output_dir} \\
+        # Create concatenated file paths
+        concat_r1 = output_dir / "concatenated_R1.fastq"
+        concat_r2 = output_dir / "concatenated_R2.fastq"
+
+        # Concatenation commands
+        concat_r1_cmd = f"cat {' '.join(r1_files)} > {concat_r1}"
+        concat_r2_cmd = f"cat {' '.join(r2_files)} > {concat_r2}"
+
+        commands.append({
+            'name': f"concat_r1_{job_name}",
+            'command': concat_r1_cmd,
+            'description': f"Concatenate {len(r1_files)} R1 files"
+        })
+
+        commands.append({
+            'name': f"concat_r2_{job_name}",
+            'command': concat_r2_cmd,
+            'description': f"Concatenate {len(r2_files)} R2 files"
+        })
+
+        # MEGAHIT command on concatenated files
+        megahit_cmd = f"""megahit \\
+    -1 {concat_r1} \\
+    -2 {concat_r2} \\
+    -o {output_dir}/megahit_assembly \\
     --min-contig-len 500 \\
     --k-list 45,65,85,105,125,145,165,185,205,225 \\
     --min-count 2 \\
     -t {threads} \\
-    --memory {memory_gb * 1073741824}"""  # Convert GB to bytes
+    --memory {memory_gb * 1073741824}"""
 
-    return command
+        commands.append({
+            'name': f"megahit_{job_name}",
+            'command': megahit_cmd,
+            'description': f"MEGAHIT assembly of concatenated reads ({len(sample_pairs)} samples)",
+            'output': output_dir / "megahit_assembly" / "final.contigs.fa"
+        })
+
+    else:
+        # Single sample - no concatenation needed
+        r1, r2 = sample_pairs[0]
+        megahit_cmd = f"""megahit \\
+    -1 {r1} \\
+    -2 {r2} \\
+    -o {output_dir}/megahit_assembly \\
+    --min-contig-len 500 \\
+    --k-list 45,65,85,105,125,145,165,185,205,225 \\
+    --min-count 2 \\
+    -t {threads} \\
+    --memory {memory_gb * 1073741824}"""
+
+        commands.append({
+            'name': f"megahit_{job_name}",
+            'command': megahit_cmd,
+            'description': f"MEGAHIT assembly of single sample",
+            'output': output_dir / "megahit_assembly" / "final.contigs.fa"
+        })
+
+    return commands
 
 
 def generate_stage1_commands(strategy, samples_dir, base_output_dir, strategy_name):
@@ -116,8 +164,8 @@ def generate_stage1_commands(strategy, samples_dir, base_output_dir, strategy_na
             })
 
     elif strategy["groups"]:
-        # Grouped assemblies: one MEGAHIT per group
-        print(f"  Stage 1: {len(strategy['groups'])} group assemblies")
+        # Grouped assemblies: concatenate then MEGAHIT per group
+        print(f"  Stage 1: {len(strategy['groups'])} group assemblies (concatenation approach)")
 
         for group in strategy["groups"]:
             group_id = group["group_id"]
@@ -130,6 +178,7 @@ def generate_stage1_commands(strategy, samples_dir, base_output_dir, strategy_na
 
             if sample_pairs:
                 group_output = stage1_dir / f"group_{group_id}"
+                group_output.mkdir(parents=True, exist_ok=True)
 
                 # Determine resources based on group size
                 group_size = len(sample_pairs)
@@ -140,18 +189,27 @@ def generate_stage1_commands(strategy, samples_dir, base_output_dir, strategy_na
                 else:
                     threads, memory_gb = 20, 200
 
-                cmd = generate_megahit_command(
-                    sample_pairs, group_output, f"megahit_{group_id}",
+                # Generate concatenation + MEGAHIT commands
+                group_commands = generate_concatenation_and_megahit_commands(
+                    sample_pairs, group_output, f"group_{group_id}",
                     threads=threads, memory_gb=memory_gb
                 )
 
-                if cmd:
+                if group_commands:
+                    # Find the MEGAHIT command to get the output path
+                    megahit_command = None
+                    for cmd in group_commands:
+                        if 'megahit_' in cmd['name']:
+                            megahit_command = cmd
+                            break
+
                     commands.append({
                         'name': f"group_{group_id}",
-                        'command': cmd,
-                        'output': group_output / "final.contigs.fa",
+                        'commands': group_commands,  # List of commands (concat R1, concat R2, megahit)
+                        'output': megahit_command['output'] if megahit_command else group_output / "megahit_assembly" / "final.contigs.fa",
                         'threads': threads,
-                        'memory_gb': memory_gb
+                        'memory_gb': memory_gb,
+                        'samples_count': len(sample_pairs)
                     })
 
     return commands
@@ -319,13 +377,23 @@ megahit \\
 echo "MEGAHIT completed for sample: $SAMPLE_ID"
 """)
         else:
-            # Regular commands
+            # Regular commands (for grouped assemblies with concatenation)
             for i, cmd_info in enumerate(commands):
                 if isinstance(cmd_info, dict):
-                    f.write(f"\n# Command {i+1}: {cmd_info['name']}\n")
-                    f.write(f"echo 'Running: {cmd_info['name']}'\n")
-                    f.write(f"{cmd_info['command']}\n")
-                    f.write(f"echo 'Completed: {cmd_info['name']}'\n\n")
+                    if 'commands' in cmd_info:
+                        # Multiple commands for this group (concatenation approach)
+                        f.write(f"\n# Group: {cmd_info['name']} ({cmd_info.get('samples_count', '?')} samples)\n")
+                        for j, subcmd in enumerate(cmd_info['commands']):
+                            f.write(f"\n# Step {j+1}: {subcmd.get('description', subcmd['name'])}\n")
+                            f.write(f"echo 'Running: {subcmd['name']}'\n")
+                            f.write(f"{subcmd['command']}\n")
+                            f.write(f"echo 'Completed: {subcmd['name']}'\n\n")
+                    else:
+                        # Single command
+                        f.write(f"\n# Command {i+1}: {cmd_info['name']}\n")
+                        f.write(f"echo 'Running: {cmd_info['name']}'\n")
+                        f.write(f"{cmd_info['command']}\n")
+                        f.write(f"echo 'Completed: {cmd_info['name']}'\n\n")
                 else:
                     f.write(f"\n# Command {i+1}\n")
                     f.write(f"{cmd_info}\n\n")
