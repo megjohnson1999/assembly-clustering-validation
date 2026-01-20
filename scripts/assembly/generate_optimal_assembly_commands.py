@@ -266,8 +266,8 @@ def write_slurm_script(commands, script_file, stage_name, strategy_name, time_li
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=megan.j@wustl.edu
 
-# Load environments
-source /ref/sahlab/software/miniforge3/etc/profile.d/conda.sh
+# Load conda environment
+source /ref/sahlab/software/miniforge3/bin/activate
 conda activate coassembly_env
 
 # Create output directories
