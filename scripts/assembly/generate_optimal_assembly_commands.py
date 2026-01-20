@@ -390,9 +390,9 @@ echo "MEGAHIT completed for sample: $SAMPLE_ID"
 """)
         else:
             # Regular commands (for grouped assemblies with concatenation)
-            # Extract and create output directory for group jobs
+            # Extract and create output directory for group jobs (Stage 1 parallel groups)
             if commands and isinstance(commands[0], dict) and 'name' in commands[0] and 'concat_r1_' in commands[0]['name']:
-                # This is a group job - extract output directory from first concatenation command
+                # This is a Stage 1 group job - extract output directory from first concatenation command
                 concat_cmd = commands[0]['command']
                 if '>' in concat_cmd:
                     output_path = concat_cmd.split('>')[-1].strip()
@@ -400,6 +400,30 @@ echo "MEGAHIT completed for sample: $SAMPLE_ID"
                     f.write(f"\n# Create group output directory\n")
                     f.write(f"echo 'Creating output directory: {output_dir}'\n")
                     f.write(f"mkdir -p {output_dir}\n\n")
+
+            # Handle Stage 2 concatenation commands (concat_strategy_name)
+            elif commands and isinstance(commands[0], dict) and 'name' in commands[0] and commands[0]['name'].startswith('concat_') and 'output' in commands[0]:
+                # This is a Stage 2 concatenation job - create output directory
+                output_path = str(commands[0]['output'])
+                output_dir = str(Path(output_path).parent)
+                f.write(f"\n# Create Stage 2 output directory\n")
+                f.write(f"echo 'Creating output directory: {output_dir}'\n")
+                f.write(f"mkdir -p {output_dir}\n\n")
+
+            # Handle Stage 3 Flye commands (flye_strategy_name)
+            elif commands and isinstance(commands[0], dict) and 'name' in commands[0] and commands[0]['name'].startswith('flye_'):
+                # This is a Stage 3 Flye job - create parent output directory (Flye creates final dir)
+                flye_cmd = commands[0]['command']
+                # Extract output directory from -o flag
+                if '-o ' in flye_cmd:
+                    # Find the -o argument value
+                    parts = flye_cmd.split('-o ')
+                    if len(parts) > 1:
+                        output_dir = parts[1].split()[0].strip()
+                        parent_dir = str(Path(output_dir).parent)
+                        f.write(f"\n# Create Stage 3 parent output directory\n")
+                        f.write(f"echo 'Creating output directory: {parent_dir}'\n")
+                        f.write(f"mkdir -p {parent_dir}\n\n")
 
             for i, cmd_info in enumerate(commands):
                 if isinstance(cmd_info, dict):
