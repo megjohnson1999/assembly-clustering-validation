@@ -274,7 +274,6 @@ def generate_stage3_commands(stage2_command, base_output_dir, strategy_name):
     --out-dir {output_dir} \\
     --meta \\
     --plasmids \\
-    --asm-coverage 50 \\
     --genome-size 100m \\
     --threads 20 \\
     --iterations 3"""
