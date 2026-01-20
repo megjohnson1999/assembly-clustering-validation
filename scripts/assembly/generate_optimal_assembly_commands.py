@@ -203,8 +203,10 @@ def generate_stage1_commands(strategy, samples_dir, base_output_dir, strategy_na
                             megahit_command = cmd
                             break
 
+                    # Store group info for parallel script creation (not sequential)
                     commands.append({
-                        'name': f"group_{group_id}",
+                        'type': 'group_job',
+                        'group_id': group_id,
                         'commands': group_commands,  # List of commands (concat R1, concat R2, megahit)
                         'output': megahit_command['output'] if megahit_command else group_output / "megahit_assembly" / "final.contigs.fa",
                         'threads': threads,
@@ -447,47 +449,62 @@ def process_strategy(strategy_file, samples_dir, base_output_dir, scripts_dir):
     scripts_path = Path(scripts_dir)
 
     if stage1_commands:
-        # Determine Stage 1 resources based on strategy type
-        if strategy["strategy"] == "individual":
-            # Individual assemblies: moderate resources, short time
-            time_limit = "4:00:00"  # 4 hours
-            memory_gb = 32
-            cpus = 8
-        elif strategy["strategy"] == "global":
-            # Global assembly: massive resources, long time
-            time_limit = "3-00:00:00"  # 3 days
-            memory_gb = 200
-            cpus = 20
+        # Check if this is group strategy with multiple groups for parallel execution
+        group_jobs = [cmd for cmd in stage1_commands if cmd.get('type') == 'group_job']
+
+        if group_jobs:
+            # Create separate SLURM scripts for each group (parallel execution)
+            print(f"  Creating {len(group_jobs)} parallel group scripts")
+            for group_job in group_jobs:
+                group_id = group_job['group_id']
+
+                # Per-group resources (much smaller than sequential jobs)
+                time_limit = "2:00:00"  # 2 hours per group
+                memory_gb = group_job['memory_gb']  # Use group-specific memory
+                cpus = group_job['threads']         # Use group-specific threads
+
+                # Write separate script for this group
+                write_slurm_script(
+                    [group_job],  # Single group's commands
+                    scripts_path / f"stage1_{strategy_name}_group_{group_id}.sh",
+                    "stage1", f"{strategy_name}_group_{group_id}",
+                    time_limit=time_limit, memory_gb=memory_gb, cpus=cpus
+                )
+
+            # Also create a master submission script for convenience
+            master_script_path = scripts_path / f"submit_all_stage1_{strategy_name}.sh"
+            with open(master_script_path, 'w') as f:
+                f.write("#!/bin/bash\n")
+                f.write(f"# Submit all {len(group_jobs)} parallel group jobs for {strategy_name}\n\n")
+                for group_job in group_jobs:
+                    group_id = group_job['group_id']
+                    f.write(f"sbatch stage1_{strategy_name}_group_{group_id}.sh\n")
+            master_script_path.chmod(0o755)  # Make executable
+
         else:
-            # Group assemblies: scale by group size based on focused strategies
-            # Determine group size from strategy name or actual group sizes
-            if "groups_size_5" in strategy.get("strategy", ""):
-                # Small groups (5 samples each): 40 groups
-                time_limit = "8:00:00"  # 8 hours
+            # Individual or global strategy (existing behavior)
+            if strategy["strategy"] == "individual":
+                # Individual assemblies: moderate resources, short time
+                time_limit = "4:00:00"  # 4 hours
+                memory_gb = 32
+                cpus = 8
+            elif strategy["strategy"] == "global":
+                # Global assembly: massive resources, long time
+                time_limit = "3-00:00:00"  # 3 days
+                memory_gb = 200
+                cpus = 20
+            else:
+                # Default fallback
+                time_limit = "8:00:00"
                 memory_gb = 64
                 cpus = 12
-            elif "groups_size_12" in strategy.get("strategy", ""):
-                # Small-medium groups (12 samples each): ~17 groups
-                time_limit = "12:00:00"  # 12 hours
-                memory_gb = 96
-                cpus = 16
-            elif "groups_size_25" in strategy.get("strategy", ""):
-                # Medium groups (25 samples each): 8 groups
-                time_limit = "1-06:00:00"  # 30 hours
-                memory_gb = 128
-                cpus = 18
-            else:
-                # Default for any other grouped strategy
-                time_limit = "16:00:00"  # 16 hours
-                memory_gb = 120
-                cpus = 16
 
-        stage1_script = write_slurm_script(
-            stage1_commands,
-            scripts_path / f"stage1_{strategy_name}.sh",
-            "stage1", strategy_name,
-            time_limit=time_limit, memory_gb=memory_gb, cpus=cpus
-        )
+            stage1_script = write_slurm_script(
+                stage1_commands,
+                scripts_path / f"stage1_{strategy_name}.sh",
+                "stage1", strategy_name,
+                time_limit=time_limit, memory_gb=memory_gb, cpus=cpus
+            )
 
     if stage2_command:
         # Stage 2: Concatenation - light resources, short time
