@@ -358,9 +358,8 @@ echo "Sample: $SAMPLE_ID"
 echo "R1: $R1_FILE"
 echo "R2: $R2_FILE"
 
-# Create sample-specific output directory (using absolute path)
+# Create sample-specific output directory path (MEGAHIT will create it)
 SAMPLE_OUTPUT="{str(output_dir.absolute())}/individual_${{SAMPLE_ID}}"
-mkdir -p "$SAMPLE_OUTPUT"
 
 # Run MEGAHIT for this sample
 echo "Running MEGAHIT for sample: $SAMPLE_ID"
