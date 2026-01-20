@@ -465,7 +465,7 @@ def process_strategy(strategy_file, samples_dir, base_output_dir, scripts_dir):
 
                 # Write separate script for this group
                 write_slurm_script(
-                    [group_job],  # Single group's commands
+                    group_job['commands'],  # The actual commands (concat R1, concat R2, megahit)
                     scripts_path / f"stage1_{strategy_name}_group_{group_id}.sh",
                     "stage1", f"{strategy_name}_group_{group_id}",
                     time_limit=time_limit, memory_gb=memory_gb, cpus=cpus
