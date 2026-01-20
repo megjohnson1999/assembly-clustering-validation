@@ -383,22 +383,28 @@ def process_strategy(strategy_file, samples_dir, base_output_dir, scripts_dir):
             memory_gb = 200
             cpus = 20
         else:
-            # Group assemblies: scale by group size
-            sample_count = len(strategy.get('individual_samples', [])) + \
-                          sum(len(g['samples']) for g in strategy.get('groups', []))
-
-            if sample_count <= 50:  # Small groups (size 4)
+            # Group assemblies: scale by group size based on focused strategies
+            # Determine group size from strategy name or actual group sizes
+            if "groups_size_5" in strategy.get("strategy", ""):
+                # Small groups (5 samples each): 40 groups
                 time_limit = "8:00:00"  # 8 hours
+                memory_gb = 64
+                cpus = 12
+            elif "groups_size_12" in strategy.get("strategy", ""):
+                # Small-medium groups (12 samples each): ~17 groups
+                time_limit = "12:00:00"  # 12 hours
+                memory_gb = 96
+                cpus = 16
+            elif "groups_size_25" in strategy.get("strategy", ""):
+                # Medium groups (25 samples each): 8 groups
+                time_limit = "1-06:00:00"  # 30 hours
+                memory_gb = 128
+                cpus = 18
+            else:
+                # Default for any other grouped strategy
+                time_limit = "16:00:00"  # 16 hours
                 memory_gb = 120
                 cpus = 16
-            elif sample_count <= 100:  # Medium groups (size 8)
-                time_limit = "16:00:00"  # 16 hours
-                memory_gb = 150
-                cpus = 18
-            else:  # Large groups (size 16)
-                time_limit = "1-12:00:00"  # 36 hours
-                memory_gb = 180
-                cpus = 20
 
         stage1_script = write_slurm_script(
             stage1_commands,
@@ -433,21 +439,21 @@ def process_strategy(strategy_file, samples_dir, base_output_dir, scripts_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate assembly commands for optimal grouping strategies")
-    parser.add_argument("--groupings-dir", default="results/optimal_groupings",
+    parser = argparse.ArgumentParser(description="Generate assembly commands for focused assembly strategies")
+    parser.add_argument("--groupings-dir", default="results/focused_strategies",
                        help="Directory containing strategy JSON files")
     parser.add_argument("--samples-dir", default="samples/subset_200",
                        help="Directory containing FASTQ files")
-    parser.add_argument("--output-dir", default="results/assemblies",
+    parser.add_argument("--output-dir", default="results/focused_assemblies",
                        help="Base output directory for assemblies")
-    parser.add_argument("--scripts-dir", default="assembly_scripts",
+    parser.add_argument("--scripts-dir", default="focused_assembly_scripts",
                        help="Directory to write SLURM scripts")
 
     args = parser.parse_args()
 
-    print("🧬 Optimal Assembly Command Generator")
+    print("🧬 Focused Assembly Command Generator")
     print("=" * 60)
-    print("Generating 3-stage assembly pipeline for all strategies")
+    print("Generating 3-stage assembly pipeline for literature-informed strategies")
     print()
 
     # Create output directories
@@ -474,9 +480,9 @@ def main():
 
     # Summary
     print("\n" + "=" * 60)
-    print("🎉 Assembly command generation completed!")
+    print("🎉 Focused assembly command generation completed!")
     print(f"📊 Summary:")
-    print(f"  • Strategies processed: {len(results)}")
+    print(f"  • Literature-informed strategies: {len(results)}")
     print(f"  • Total Stage 1 MEGAHIT jobs: {total_stage1_commands}")
     print(f"  • Final assemblies expected: {len(results)}")
     print(f"  • SLURM scripts written to: {args.scripts_dir}/")
@@ -490,10 +496,11 @@ def main():
     print()
     print("🚀 Next steps:")
     print("1. Review generated SLURM scripts")
-    print("2. Submit Stage 1 jobs: sbatch assembly_scripts/stage1_*.sh")
+    print("2. Submit Stage 1 jobs: sbatch focused_assembly_scripts/stage1_*.sh")
     print("3. Monitor completion, then submit Stage 2 jobs")
     print("4. Monitor completion, then submit Stage 3 jobs")
-    print("5. Run assembly quality analysis on final results")
+    print("5. Run CheckV analysis for viral genome completeness")
+    print("6. Compare strain diversity vs low-abundance recovery")
 
 
 if __name__ == "__main__":
