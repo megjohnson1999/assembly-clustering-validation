@@ -245,8 +245,19 @@ def generate_stage2_commands(stage1_commands, base_output_dir, strategy_name, st
 
     output_file = stage2_dir / "concatenated_contigs.fa"
 
-    # Simple concatenation command
-    concat_cmd = f"cat {' '.join(input_files)} > {output_file}"
+    # Concatenation with unique contig IDs (matching Hecatomb approach)
+    # This prevents duplicate sequence IDs that cause Flye errors
+    if len(input_files) == 1:
+        # Single file, no need for ID modification
+        concat_cmd = f"cat {input_files[0]} > {output_file}"
+    else:
+        # Multiple files, add unique prefixes to avoid duplicate IDs
+        concat_cmd = f"""
+n=0
+for i in {' '.join(input_files)}; do
+  cat "$i" | sed "s/>/>${{n}}/"
+  n=${{n}}1
+done > {output_file}"""
 
     return {
         'name': f"concat_{strategy_name}",
