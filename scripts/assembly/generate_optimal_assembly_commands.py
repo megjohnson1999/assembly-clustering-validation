@@ -268,15 +268,13 @@ def generate_stage3_commands(stage2_command, base_output_dir, strategy_name):
     input_file = stage2_command['output']
     output_dir = stage3_dir / "flye_assembly"
 
-    # Flye meta-assembly command
+    # Flye meta-assembly command (matching Hecatomb parameters)
     flye_cmd = f"""flye \\
     --subassemblies {input_file} \\
-    --out-dir {output_dir} \\
-    --meta \\
     --plasmids \\
-    --genome-size 100m \\
-    --threads 20 \\
-    --iterations 3"""
+    -g 1g \\
+    -t 20 \\
+    -o {output_dir}"""
 
     return {
         'name': f"flye_{strategy_name}",
