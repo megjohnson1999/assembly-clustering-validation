@@ -348,8 +348,8 @@ echo "Start time: $(date)"
 # Array job: process sample based on SLURM_ARRAY_TASK_ID
 echo "Processing array task: $SLURM_ARRAY_TASK_ID"
 
-# Read sample info from list file
-SAMPLE_INFO=$(sed -n "${{SLURM_ARRAY_TASK_ID}}p" {sample_list_file})
+# Read sample info from list file (using absolute path)
+SAMPLE_INFO=$(sed -n "${{SLURM_ARRAY_TASK_ID}}p" {str(sample_list_file.absolute())})
 SAMPLE_ID=$(echo "$SAMPLE_INFO" | cut -f1)
 R1_FILE=$(echo "$SAMPLE_INFO" | cut -f2)
 R2_FILE=$(echo "$SAMPLE_INFO" | cut -f3)
@@ -358,8 +358,8 @@ echo "Sample: $SAMPLE_ID"
 echo "R1: $R1_FILE"
 echo "R2: $R2_FILE"
 
-# Create sample-specific output directory
-SAMPLE_OUTPUT="{output_dir}/individual_${{SAMPLE_ID}}"
+# Create sample-specific output directory (using absolute path)
+SAMPLE_OUTPUT="{str(output_dir.absolute())}/individual_${{SAMPLE_ID}}"
 mkdir -p "$SAMPLE_OUTPUT"
 
 # Run MEGAHIT for this sample
