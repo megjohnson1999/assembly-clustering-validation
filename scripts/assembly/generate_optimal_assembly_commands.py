@@ -88,28 +88,32 @@ def generate_stage1_commands(strategy, samples_dir, base_output_dir, strategy_na
     stage1_dir = Path(base_output_dir) / "stage1_megahit" / strategy_name
 
     if strategy["strategy"] == "individual":
-        # Individual assemblies: one MEGAHIT per sample
-        print(f"  Stage 1: {len(strategy['individual_samples'])} individual assemblies")
+        # Individual assemblies: use SLURM array for parallel execution
+        print(f"  Stage 1: {len(strategy['individual_samples'])} individual assemblies (SLURM array)")
 
-        for sample_id in strategy["individual_samples"]:
-            r1, r2 = find_sample_files(sample_id, samples_dir)
-            if r1 and r2:
-                sample_output = stage1_dir / f"individual_{sample_id}"
-                sample_pairs = [(r1, r2)]
+        # Create sample list file for the array job to read
+        sample_list_file = stage1_dir / "sample_list.txt"
+        stage1_dir.mkdir(parents=True, exist_ok=True)
 
-                cmd = generate_megahit_command(
-                    sample_pairs, sample_output, f"megahit_{sample_id}",
-                    threads=8, memory_gb=32
-                )
+        valid_samples = []
+        with open(sample_list_file, 'w') as f:
+            for sample_id in strategy["individual_samples"]:
+                r1, r2 = find_sample_files(sample_id, samples_dir)
+                if r1 and r2:
+                    f.write(f"{sample_id}\t{r1}\t{r2}\n")
+                    valid_samples.append(sample_id)
 
-                if cmd:
-                    commands.append({
-                        'name': f"individual_{sample_id}",
-                        'command': cmd,
-                        'output': sample_output / "final.contigs.fa",
-                        'threads': 8,
-                        'memory_gb': 32
-                    })
+        if valid_samples:
+            # Return array job info instead of individual commands
+            commands.append({
+                'type': 'array',
+                'array_size': len(valid_samples),
+                'sample_list_file': sample_list_file,
+                'samples_dir': samples_dir,
+                'output_dir': stage1_dir,
+                'threads': 8,
+                'memory_gb': 32
+            })
 
     elif strategy["groups"]:
         # Grouped assemblies: one MEGAHIT per group
@@ -153,7 +157,7 @@ def generate_stage1_commands(strategy, samples_dir, base_output_dir, strategy_na
     return commands
 
 
-def generate_stage2_commands(stage1_commands, base_output_dir, strategy_name):
+def generate_stage2_commands(stage1_commands, base_output_dir, strategy_name, strategy=None):
     """Generate Stage 2 concatenation commands."""
     if not stage1_commands:
         return None
@@ -161,10 +165,25 @@ def generate_stage2_commands(stage1_commands, base_output_dir, strategy_name):
     stage2_dir = Path(base_output_dir) / "stage2_concat" / strategy_name
     stage2_dir.mkdir(parents=True, exist_ok=True)
 
-    # Collect all stage 1 output files
-    input_files = []
-    for cmd_info in stage1_commands:
-        input_files.append(str(cmd_info['output']))
+    # Handle array jobs vs regular commands differently
+    if len(stage1_commands) == 1 and stage1_commands[0].get('type') == 'array':
+        # Array job: collect outputs from individual sample directories
+        array_info = stage1_commands[0]
+        input_files = []
+
+        if strategy and strategy.get('individual_samples'):
+            for sample_id in strategy['individual_samples']:
+                sample_output = array_info['output_dir'] / f"individual_{sample_id}" / "final.contigs.fa"
+                input_files.append(str(sample_output))
+    else:
+        # Regular commands: collect from command outputs
+        input_files = []
+        for cmd_info in stage1_commands:
+            if isinstance(cmd_info, dict) and 'output' in cmd_info:
+                input_files.append(str(cmd_info['output']))
+
+    if not input_files:
+        return None
 
     output_file = stage2_dir / "concatenated_contigs.fa"
 
@@ -175,7 +194,8 @@ def generate_stage2_commands(stage1_commands, base_output_dir, strategy_name):
         'name': f"concat_{strategy_name}",
         'command': concat_cmd,
         'output': output_file,
-        'depends_on': [cmd['name'] for cmd in stage1_commands]
+        'depends_on': ['stage1_array'] if len(stage1_commands) == 1 and stage1_commands[0].get('type') == 'array'
+                      else [cmd.get('name', f'stage1_{i}') for i, cmd in enumerate(stage1_commands)]
     }
 
 
@@ -223,12 +243,24 @@ def write_slurm_script(commands, script_file, stage_name, strategy_name, time_li
     if cpus is None:
         cpus = 8  # 8 CPUs default
 
+    # Check if this is an array job
+    is_array_job = len(commands) == 1 and isinstance(commands[0], dict) and commands[0].get('type') == 'array'
+
     with open(script_path, 'w') as f:
+        # SLURM headers
         f.write(f"""#!/bin/bash
 #SBATCH --job-name={stage_name}_{strategy_name}
 #SBATCH --time={time_limit}
 #SBATCH --mem={memory_gb}G
-#SBATCH --cpus-per-task={cpus}
+#SBATCH --cpus-per-task={cpus}""")
+
+        # Add array directive if this is an array job
+        if is_array_job:
+            array_size = commands[0]['array_size']
+            f.write(f"""
+#SBATCH --array=1-{array_size}""")
+
+        f.write(f"""
 #SBATCH --output=logs/{stage_name}_{strategy_name}_%j.out
 #SBATCH --error=logs/{stage_name}_{strategy_name}_%j.err
 #SBATCH --mail-type=END,FAIL
@@ -248,15 +280,55 @@ echo "Start time: $(date)"
 
 """)
 
-        for i, cmd_info in enumerate(commands):
-            if isinstance(cmd_info, dict):
-                f.write(f"\n# Command {i+1}: {cmd_info['name']}\n")
-                f.write(f"echo 'Running: {cmd_info['name']}'\n")
-                f.write(f"{cmd_info['command']}\n")
-                f.write(f"echo 'Completed: {cmd_info['name']}'\n\n")
-            else:
-                f.write(f"\n# Command {i+1}\n")
-                f.write(f"{cmd_info}\n\n")
+        if is_array_job:
+            # Array job: process one sample per task
+            array_info = commands[0]
+            sample_list_file = array_info['sample_list_file']
+            output_dir = array_info['output_dir']
+
+            f.write(f"""
+# Array job: process sample based on SLURM_ARRAY_TASK_ID
+echo "Processing array task: $SLURM_ARRAY_TASK_ID"
+
+# Read sample info from list file
+SAMPLE_INFO=$(sed -n "${{SLURM_ARRAY_TASK_ID}}p" {sample_list_file})
+SAMPLE_ID=$(echo "$SAMPLE_INFO" | cut -f1)
+R1_FILE=$(echo "$SAMPLE_INFO" | cut -f2)
+R2_FILE=$(echo "$SAMPLE_INFO" | cut -f3)
+
+echo "Sample: $SAMPLE_ID"
+echo "R1: $R1_FILE"
+echo "R2: $R2_FILE"
+
+# Create sample-specific output directory
+SAMPLE_OUTPUT="{output_dir}/individual_${{SAMPLE_ID}}"
+mkdir -p "$SAMPLE_OUTPUT"
+
+# Run MEGAHIT for this sample
+echo "Running MEGAHIT for sample: $SAMPLE_ID"
+megahit \\
+    -1 "$R1_FILE" \\
+    -2 "$R2_FILE" \\
+    -o "$SAMPLE_OUTPUT" \\
+    --min-contig-len 500 \\
+    --k-list 45,65,85,105,125,145,165,185,205,225 \\
+    --min-count 2 \\
+    -t {cpus} \\
+    --memory {memory_gb * 1073741824}
+
+echo "MEGAHIT completed for sample: $SAMPLE_ID"
+""")
+        else:
+            # Regular commands
+            for i, cmd_info in enumerate(commands):
+                if isinstance(cmd_info, dict):
+                    f.write(f"\n# Command {i+1}: {cmd_info['name']}\n")
+                    f.write(f"echo 'Running: {cmd_info['name']}'\n")
+                    f.write(f"{cmd_info['command']}\n")
+                    f.write(f"echo 'Completed: {cmd_info['name']}'\n\n")
+                else:
+                    f.write(f"\n# Command {i+1}\n")
+                    f.write(f"{cmd_info}\n\n")
 
         f.write(f"""
 echo "End time: $(date)"
@@ -288,7 +360,7 @@ def process_strategy(strategy_file, samples_dir, base_output_dir, scripts_dir):
     print(f"  Stage 1: Generated {len(stage1_commands)} MEGAHIT commands")
 
     # Generate Stage 2 command
-    stage2_command = generate_stage2_commands(stage1_commands, base_output_dir, strategy_name)
+    stage2_command = generate_stage2_commands(stage1_commands, base_output_dir, strategy_name, strategy)
     print(f"  Stage 2: Generated concatenation command")
 
     # Generate Stage 3 command
