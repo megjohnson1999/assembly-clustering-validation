@@ -210,21 +210,29 @@ def generate_stage3_commands(stage2_command, base_output_dir, strategy_name):
     }
 
 
-def write_slurm_script(commands, script_file, stage_name, strategy_name):
+def write_slurm_script(commands, script_file, stage_name, strategy_name, time_limit=None, memory_gb=None, cpus=None):
     """Write a SLURM batch script for a set of commands."""
     script_path = Path(script_file)
     script_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Set defaults if not provided
+    if time_limit is None:
+        time_limit = "8:00:00"  # 8 hours default
+    if memory_gb is None:
+        memory_gb = 32  # 32GB default
+    if cpus is None:
+        cpus = 8  # 8 CPUs default
+
     with open(script_path, 'w') as f:
         f.write(f"""#!/bin/bash
 #SBATCH --job-name={stage_name}_{strategy_name}
-#SBATCH --partition=sahlab
-#SBATCH --time=2-00:00:00
-#SBATCH --nodes=1
+#SBATCH --time={time_limit}
+#SBATCH --mem={memory_gb}G
+#SBATCH --cpus-per-task={cpus}
 #SBATCH --output=logs/{stage_name}_{strategy_name}_%j.out
 #SBATCH --error=logs/{stage_name}_{strategy_name}_%j.err
-#SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=megan.johnson@wustl.edu
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=megan.j@wustl.edu
 
 # Load environments
 source /ref/sahlab/software/miniforge3/etc/profile.d/conda.sh
@@ -287,28 +295,62 @@ def process_strategy(strategy_file, samples_dir, base_output_dir, scripts_dir):
     stage3_command = generate_stage3_commands(stage2_command, base_output_dir, strategy_name)
     print(f"  Stage 3: Generated Flye meta-assembly command")
 
-    # Write SLURM scripts
+    # Write SLURM scripts with appropriate resource allocation
     scripts_path = Path(scripts_dir)
 
     if stage1_commands:
+        # Determine Stage 1 resources based on strategy type
+        if strategy["strategy"] == "individual":
+            # Individual assemblies: moderate resources, short time
+            time_limit = "4:00:00"  # 4 hours
+            memory_gb = 32
+            cpus = 8
+        elif strategy["strategy"] == "global":
+            # Global assembly: massive resources, long time
+            time_limit = "3-00:00:00"  # 3 days
+            memory_gb = 200
+            cpus = 20
+        else:
+            # Group assemblies: scale by group size
+            sample_count = len(strategy.get('individual_samples', [])) + \
+                          sum(len(g['samples']) for g in strategy.get('groups', []))
+
+            if sample_count <= 50:  # Small groups (size 4)
+                time_limit = "8:00:00"  # 8 hours
+                memory_gb = 120
+                cpus = 16
+            elif sample_count <= 100:  # Medium groups (size 8)
+                time_limit = "16:00:00"  # 16 hours
+                memory_gb = 150
+                cpus = 18
+            else:  # Large groups (size 16)
+                time_limit = "1-12:00:00"  # 36 hours
+                memory_gb = 180
+                cpus = 20
+
         stage1_script = write_slurm_script(
             stage1_commands,
             scripts_path / f"stage1_{strategy_name}.sh",
-            "stage1", strategy_name
+            "stage1", strategy_name,
+            time_limit=time_limit, memory_gb=memory_gb, cpus=cpus
         )
 
     if stage2_command:
+        # Stage 2: Concatenation - light resources, short time
         stage2_script = write_slurm_script(
             [stage2_command],
             scripts_path / f"stage2_{strategy_name}.sh",
-            "stage2", strategy_name
+            "stage2", strategy_name,
+            time_limit="0:30:00", memory_gb=8, cpus=2
         )
 
     if stage3_command:
+        # Stage 3: Flye meta-assembly - heavy resources, medium time
         stage3_script = write_slurm_script(
             [stage3_command],
             scripts_path / f"stage3_{strategy_name}.sh",
-            "stage3", strategy_name
+            "stage3", strategy_name,
+            time_limit="1-00:00:00", memory_gb=200, cpus=20
         )
 
     return {
