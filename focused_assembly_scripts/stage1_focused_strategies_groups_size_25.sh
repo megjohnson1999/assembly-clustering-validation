@@ -1,0 +1,249 @@
+#!/bin/bash
+#SBATCH --job-name=stage1_focused_strategies_groups_size_25
+#SBATCH --time=1-06:00:00
+#SBATCH --mem=128G
+#SBATCH --cpus-per-task=18
+#SBATCH --output=logs/stage1_focused_strategies_groups_size_25_%j.out
+#SBATCH --error=logs/stage1_focused_strategies_groups_size_25_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=megan.j@wustl.edu
+
+# Load conda environment
+source /ref/sahlab/software/miniforge3/bin/activate
+conda activate coassembly_env
+
+# Create output directories
+mkdir -p logs
+
+echo "Starting stage1 for strategy: focused_strategies_groups_size_25"
+echo "Job ID: $SLURM_JOB_ID"
+echo "Node: $SLURM_NODELIST"
+echo "Start time: $(date)"
+
+
+# Group: group_groups_size_25_group_1 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_1'
+cat samples/subset_50/sample_067_rrna_removed_R1.fastq samples/subset_50/sample_188_rrna_removed_R1.fastq samples/subset_50/sample_102_rrna_removed_R1.fastq samples/subset_50/sample_194_rrna_removed_R1.fastq samples/subset_50/sample_112_rrna_removed_R1.fastq samples/subset_50/sample_122_rrna_removed_R1.fastq samples/subset_50/sample_014_rrna_removed_R1.fastq samples/subset_50/sample_003_rrna_removed_R1.fastq samples/subset_50/sample_065_rrna_removed_R1.fastq samples/subset_50/sample_045_rrna_removed_R1.fastq samples/subset_50/sample_137_rrna_removed_R1.fastq samples/subset_50/sample_171_rrna_removed_R1.fastq samples/subset_50/sample_129_rrna_removed_R1.fastq samples/subset_50/sample_077_rrna_removed_R1.fastq samples/subset_50/sample_159_rrna_removed_R1.fastq samples/subset_50/sample_168_rrna_removed_R1.fastq samples/subset_50/sample_046_rrna_removed_R1.fastq samples/subset_50/sample_131_rrna_removed_R1.fastq samples/subset_50/sample_031_rrna_removed_R1.fastq samples/subset_50/sample_004_rrna_removed_R1.fastq samples/subset_50/sample_160_rrna_removed_R1.fastq samples/subset_50/sample_016_rrna_removed_R1.fastq samples/subset_50/sample_043_rrna_removed_R1.fastq samples/subset_50/sample_127_rrna_removed_R1.fastq samples/subset_50/sample_187_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_1/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_1'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_1'
+cat samples/subset_50/sample_067_rrna_removed_R2.fastq samples/subset_50/sample_188_rrna_removed_R2.fastq samples/subset_50/sample_102_rrna_removed_R2.fastq samples/subset_50/sample_194_rrna_removed_R2.fastq samples/subset_50/sample_112_rrna_removed_R2.fastq samples/subset_50/sample_122_rrna_removed_R2.fastq samples/subset_50/sample_014_rrna_removed_R2.fastq samples/subset_50/sample_003_rrna_removed_R2.fastq samples/subset_50/sample_065_rrna_removed_R2.fastq samples/subset_50/sample_045_rrna_removed_R2.fastq samples/subset_50/sample_137_rrna_removed_R2.fastq samples/subset_50/sample_171_rrna_removed_R2.fastq samples/subset_50/sample_129_rrna_removed_R2.fastq samples/subset_50/sample_077_rrna_removed_R2.fastq samples/subset_50/sample_159_rrna_removed_R2.fastq samples/subset_50/sample_168_rrna_removed_R2.fastq samples/subset_50/sample_046_rrna_removed_R2.fastq samples/subset_50/sample_131_rrna_removed_R2.fastq samples/subset_50/sample_031_rrna_removed_R2.fastq samples/subset_50/sample_004_rrna_removed_R2.fastq samples/subset_50/sample_160_rrna_removed_R2.fastq samples/subset_50/sample_016_rrna_removed_R2.fastq samples/subset_50/sample_043_rrna_removed_R2.fastq samples/subset_50/sample_127_rrna_removed_R2.fastq samples/subset_50/sample_187_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_1/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_1'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_1'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_1/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_1/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_1/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_1'
+
+
+# Group: group_groups_size_25_group_2 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_2'
+cat samples/subset_50/sample_163_rrna_removed_R1.fastq samples/subset_50/sample_048_rrna_removed_R1.fastq samples/subset_50/sample_111_rrna_removed_R1.fastq samples/subset_50/sample_006_rrna_removed_R1.fastq samples/subset_50/sample_195_rrna_removed_R1.fastq samples/subset_50/sample_038_rrna_removed_R1.fastq samples/subset_50/sample_123_rrna_removed_R1.fastq samples/subset_50/sample_013_rrna_removed_R1.fastq samples/subset_50/sample_037_rrna_removed_R1.fastq samples/subset_50/sample_154_rrna_removed_R1.fastq samples/subset_50/sample_070_rrna_removed_R1.fastq samples/subset_50/sample_062_rrna_removed_R1.fastq samples/subset_50/sample_196_rrna_removed_R1.fastq samples/subset_50/sample_033_rrna_removed_R1.fastq samples/subset_50/sample_173_rrna_removed_R1.fastq samples/subset_50/sample_172_rrna_removed_R1.fastq samples/subset_50/sample_061_rrna_removed_R1.fastq samples/subset_50/sample_011_rrna_removed_R1.fastq samples/subset_50/sample_145_rrna_removed_R1.fastq samples/subset_50/sample_161_rrna_removed_R1.fastq samples/subset_50/sample_053_rrna_removed_R1.fastq samples/subset_50/sample_126_rrna_removed_R1.fastq samples/subset_50/sample_107_rrna_removed_R1.fastq samples/subset_50/sample_074_rrna_removed_R1.fastq samples/subset_50/sample_114_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_2/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_2'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_2'
+cat samples/subset_50/sample_163_rrna_removed_R2.fastq samples/subset_50/sample_048_rrna_removed_R2.fastq samples/subset_50/sample_111_rrna_removed_R2.fastq samples/subset_50/sample_006_rrna_removed_R2.fastq samples/subset_50/sample_195_rrna_removed_R2.fastq samples/subset_50/sample_038_rrna_removed_R2.fastq samples/subset_50/sample_123_rrna_removed_R2.fastq samples/subset_50/sample_013_rrna_removed_R2.fastq samples/subset_50/sample_037_rrna_removed_R2.fastq samples/subset_50/sample_154_rrna_removed_R2.fastq samples/subset_50/sample_070_rrna_removed_R2.fastq samples/subset_50/sample_062_rrna_removed_R2.fastq samples/subset_50/sample_196_rrna_removed_R2.fastq samples/subset_50/sample_033_rrna_removed_R2.fastq samples/subset_50/sample_173_rrna_removed_R2.fastq samples/subset_50/sample_172_rrna_removed_R2.fastq samples/subset_50/sample_061_rrna_removed_R2.fastq samples/subset_50/sample_011_rrna_removed_R2.fastq samples/subset_50/sample_145_rrna_removed_R2.fastq samples/subset_50/sample_161_rrna_removed_R2.fastq samples/subset_50/sample_053_rrna_removed_R2.fastq samples/subset_50/sample_126_rrna_removed_R2.fastq samples/subset_50/sample_107_rrna_removed_R2.fastq samples/subset_50/sample_074_rrna_removed_R2.fastq samples/subset_50/sample_114_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_2/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_2'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_2'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_2/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_2/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_2/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_2'
+
+
+# Group: group_groups_size_25_group_3 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_3'
+cat samples/subset_50/sample_106_rrna_removed_R1.fastq samples/subset_50/sample_096_rrna_removed_R1.fastq samples/subset_50/sample_104_rrna_removed_R1.fastq samples/subset_50/sample_146_rrna_removed_R1.fastq samples/subset_50/sample_044_rrna_removed_R1.fastq samples/subset_50/sample_001_rrna_removed_R1.fastq samples/subset_50/sample_162_rrna_removed_R1.fastq samples/subset_50/sample_193_rrna_removed_R1.fastq samples/subset_50/sample_017_rrna_removed_R1.fastq samples/subset_50/sample_081_rrna_removed_R1.fastq samples/subset_50/sample_103_rrna_removed_R1.fastq samples/subset_50/sample_039_rrna_removed_R1.fastq samples/subset_50/sample_157_rrna_removed_R1.fastq samples/subset_50/sample_177_rrna_removed_R1.fastq samples/subset_50/sample_136_rrna_removed_R1.fastq samples/subset_50/sample_079_rrna_removed_R1.fastq samples/subset_50/sample_116_rrna_removed_R1.fastq samples/subset_50/sample_020_rrna_removed_R1.fastq samples/subset_50/sample_015_rrna_removed_R1.fastq samples/subset_50/sample_178_rrna_removed_R1.fastq samples/subset_50/sample_147_rrna_removed_R1.fastq samples/subset_50/sample_180_rrna_removed_R1.fastq samples/subset_50/sample_066_rrna_removed_R1.fastq samples/subset_50/sample_085_rrna_removed_R1.fastq samples/subset_50/sample_166_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_3/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_3'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_3'
+cat samples/subset_50/sample_106_rrna_removed_R2.fastq samples/subset_50/sample_096_rrna_removed_R2.fastq samples/subset_50/sample_104_rrna_removed_R2.fastq samples/subset_50/sample_146_rrna_removed_R2.fastq samples/subset_50/sample_044_rrna_removed_R2.fastq samples/subset_50/sample_001_rrna_removed_R2.fastq samples/subset_50/sample_162_rrna_removed_R2.fastq samples/subset_50/sample_193_rrna_removed_R2.fastq samples/subset_50/sample_017_rrna_removed_R2.fastq samples/subset_50/sample_081_rrna_removed_R2.fastq samples/subset_50/sample_103_rrna_removed_R2.fastq samples/subset_50/sample_039_rrna_removed_R2.fastq samples/subset_50/sample_157_rrna_removed_R2.fastq samples/subset_50/sample_177_rrna_removed_R2.fastq samples/subset_50/sample_136_rrna_removed_R2.fastq samples/subset_50/sample_079_rrna_removed_R2.fastq samples/subset_50/sample_116_rrna_removed_R2.fastq samples/subset_50/sample_020_rrna_removed_R2.fastq samples/subset_50/sample_015_rrna_removed_R2.fastq samples/subset_50/sample_178_rrna_removed_R2.fastq samples/subset_50/sample_147_rrna_removed_R2.fastq samples/subset_50/sample_180_rrna_removed_R2.fastq samples/subset_50/sample_066_rrna_removed_R2.fastq samples/subset_50/sample_085_rrna_removed_R2.fastq samples/subset_50/sample_166_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_3/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_3'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_3'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_3/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_3/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_3/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_3'
+
+
+# Group: group_groups_size_25_group_4 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_4'
+cat samples/subset_50/sample_047_rrna_removed_R1.fastq samples/subset_50/sample_105_rrna_removed_R1.fastq samples/subset_50/sample_080_rrna_removed_R1.fastq samples/subset_50/sample_055_rrna_removed_R1.fastq samples/subset_50/sample_197_rrna_removed_R1.fastq samples/subset_50/sample_086_rrna_removed_R1.fastq samples/subset_50/sample_119_rrna_removed_R1.fastq samples/subset_50/sample_110_rrna_removed_R1.fastq samples/subset_50/sample_134_rrna_removed_R1.fastq samples/subset_50/sample_143_rrna_removed_R1.fastq samples/subset_50/sample_034_rrna_removed_R1.fastq samples/subset_50/sample_019_rrna_removed_R1.fastq samples/subset_50/sample_141_rrna_removed_R1.fastq samples/subset_50/sample_124_rrna_removed_R1.fastq samples/subset_50/sample_176_rrna_removed_R1.fastq samples/subset_50/sample_064_rrna_removed_R1.fastq samples/subset_50/sample_084_rrna_removed_R1.fastq samples/subset_50/sample_149_rrna_removed_R1.fastq samples/subset_50/sample_101_rrna_removed_R1.fastq samples/subset_50/sample_156_rrna_removed_R1.fastq samples/subset_50/sample_073_rrna_removed_R1.fastq samples/subset_50/sample_028_rrna_removed_R1.fastq samples/subset_50/sample_185_rrna_removed_R1.fastq samples/subset_50/sample_113_rrna_removed_R1.fastq samples/subset_50/sample_052_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_4/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_4'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_4'
+cat samples/subset_50/sample_047_rrna_removed_R2.fastq samples/subset_50/sample_105_rrna_removed_R2.fastq samples/subset_50/sample_080_rrna_removed_R2.fastq samples/subset_50/sample_055_rrna_removed_R2.fastq samples/subset_50/sample_197_rrna_removed_R2.fastq samples/subset_50/sample_086_rrna_removed_R2.fastq samples/subset_50/sample_119_rrna_removed_R2.fastq samples/subset_50/sample_110_rrna_removed_R2.fastq samples/subset_50/sample_134_rrna_removed_R2.fastq samples/subset_50/sample_143_rrna_removed_R2.fastq samples/subset_50/sample_034_rrna_removed_R2.fastq samples/subset_50/sample_019_rrna_removed_R2.fastq samples/subset_50/sample_141_rrna_removed_R2.fastq samples/subset_50/sample_124_rrna_removed_R2.fastq samples/subset_50/sample_176_rrna_removed_R2.fastq samples/subset_50/sample_064_rrna_removed_R2.fastq samples/subset_50/sample_084_rrna_removed_R2.fastq samples/subset_50/sample_149_rrna_removed_R2.fastq samples/subset_50/sample_101_rrna_removed_R2.fastq samples/subset_50/sample_156_rrna_removed_R2.fastq samples/subset_50/sample_073_rrna_removed_R2.fastq samples/subset_50/sample_028_rrna_removed_R2.fastq samples/subset_50/sample_185_rrna_removed_R2.fastq samples/subset_50/sample_113_rrna_removed_R2.fastq samples/subset_50/sample_052_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_4/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_4'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_4'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_4/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_4/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_4/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_4'
+
+
+# Group: group_groups_size_25_group_5 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_5'
+cat samples/subset_50/sample_175_rrna_removed_R1.fastq samples/subset_50/sample_005_rrna_removed_R1.fastq samples/subset_50/sample_030_rrna_removed_R1.fastq samples/subset_50/sample_184_rrna_removed_R1.fastq samples/subset_50/sample_100_rrna_removed_R1.fastq samples/subset_50/sample_099_rrna_removed_R1.fastq samples/subset_50/sample_132_rrna_removed_R1.fastq samples/subset_50/sample_125_rrna_removed_R1.fastq samples/subset_50/sample_199_rrna_removed_R1.fastq samples/subset_50/sample_135_rrna_removed_R1.fastq samples/subset_50/sample_179_rrna_removed_R1.fastq samples/subset_50/sample_121_rrna_removed_R1.fastq samples/subset_50/sample_035_rrna_removed_R1.fastq samples/subset_50/sample_049_rrna_removed_R1.fastq samples/subset_50/sample_170_rrna_removed_R1.fastq samples/subset_50/sample_139_rrna_removed_R1.fastq samples/subset_50/sample_150_rrna_removed_R1.fastq samples/subset_50/sample_133_rrna_removed_R1.fastq samples/subset_50/sample_128_rrna_removed_R1.fastq samples/subset_50/sample_022_rrna_removed_R1.fastq samples/subset_50/sample_082_rrna_removed_R1.fastq samples/subset_50/sample_078_rrna_removed_R1.fastq samples/subset_50/sample_010_rrna_removed_R1.fastq samples/subset_50/sample_083_rrna_removed_R1.fastq samples/subset_50/sample_165_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_5/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_5'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_5'
+cat samples/subset_50/sample_175_rrna_removed_R2.fastq samples/subset_50/sample_005_rrna_removed_R2.fastq samples/subset_50/sample_030_rrna_removed_R2.fastq samples/subset_50/sample_184_rrna_removed_R2.fastq samples/subset_50/sample_100_rrna_removed_R2.fastq samples/subset_50/sample_099_rrna_removed_R2.fastq samples/subset_50/sample_132_rrna_removed_R2.fastq samples/subset_50/sample_125_rrna_removed_R2.fastq samples/subset_50/sample_199_rrna_removed_R2.fastq samples/subset_50/sample_135_rrna_removed_R2.fastq samples/subset_50/sample_179_rrna_removed_R2.fastq samples/subset_50/sample_121_rrna_removed_R2.fastq samples/subset_50/sample_035_rrna_removed_R2.fastq samples/subset_50/sample_049_rrna_removed_R2.fastq samples/subset_50/sample_170_rrna_removed_R2.fastq samples/subset_50/sample_139_rrna_removed_R2.fastq samples/subset_50/sample_150_rrna_removed_R2.fastq samples/subset_50/sample_133_rrna_removed_R2.fastq samples/subset_50/sample_128_rrna_removed_R2.fastq samples/subset_50/sample_022_rrna_removed_R2.fastq samples/subset_50/sample_082_rrna_removed_R2.fastq samples/subset_50/sample_078_rrna_removed_R2.fastq samples/subset_50/sample_010_rrna_removed_R2.fastq samples/subset_50/sample_083_rrna_removed_R2.fastq samples/subset_50/sample_165_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_5/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_5'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_5'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_5/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_5/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_5/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_5'
+
+
+# Group: group_groups_size_25_group_6 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_6'
+cat samples/subset_50/sample_120_rrna_removed_R1.fastq samples/subset_50/sample_090_rrna_removed_R1.fastq samples/subset_50/sample_069_rrna_removed_R1.fastq samples/subset_50/sample_054_rrna_removed_R1.fastq samples/subset_50/sample_091_rrna_removed_R1.fastq samples/subset_50/sample_095_rrna_removed_R1.fastq samples/subset_50/sample_042_rrna_removed_R1.fastq samples/subset_50/sample_094_rrna_removed_R1.fastq samples/subset_50/sample_117_rrna_removed_R1.fastq samples/subset_50/sample_200_rrna_removed_R1.fastq samples/subset_50/sample_158_rrna_removed_R1.fastq samples/subset_50/sample_026_rrna_removed_R1.fastq samples/subset_50/sample_181_rrna_removed_R1.fastq samples/subset_50/sample_148_rrna_removed_R1.fastq samples/subset_50/sample_075_rrna_removed_R1.fastq samples/subset_50/sample_059_rrna_removed_R1.fastq samples/subset_50/sample_153_rrna_removed_R1.fastq samples/subset_50/sample_018_rrna_removed_R1.fastq samples/subset_50/sample_050_rrna_removed_R1.fastq samples/subset_50/sample_093_rrna_removed_R1.fastq samples/subset_50/sample_076_rrna_removed_R1.fastq samples/subset_50/sample_142_rrna_removed_R1.fastq samples/subset_50/sample_021_rrna_removed_R1.fastq samples/subset_50/sample_097_rrna_removed_R1.fastq samples/subset_50/sample_032_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_6/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_6'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_6'
+cat samples/subset_50/sample_120_rrna_removed_R2.fastq samples/subset_50/sample_090_rrna_removed_R2.fastq samples/subset_50/sample_069_rrna_removed_R2.fastq samples/subset_50/sample_054_rrna_removed_R2.fastq samples/subset_50/sample_091_rrna_removed_R2.fastq samples/subset_50/sample_095_rrna_removed_R2.fastq samples/subset_50/sample_042_rrna_removed_R2.fastq samples/subset_50/sample_094_rrna_removed_R2.fastq samples/subset_50/sample_117_rrna_removed_R2.fastq samples/subset_50/sample_200_rrna_removed_R2.fastq samples/subset_50/sample_158_rrna_removed_R2.fastq samples/subset_50/sample_026_rrna_removed_R2.fastq samples/subset_50/sample_181_rrna_removed_R2.fastq samples/subset_50/sample_148_rrna_removed_R2.fastq samples/subset_50/sample_075_rrna_removed_R2.fastq samples/subset_50/sample_059_rrna_removed_R2.fastq samples/subset_50/sample_153_rrna_removed_R2.fastq samples/subset_50/sample_018_rrna_removed_R2.fastq samples/subset_50/sample_050_rrna_removed_R2.fastq samples/subset_50/sample_093_rrna_removed_R2.fastq samples/subset_50/sample_076_rrna_removed_R2.fastq samples/subset_50/sample_142_rrna_removed_R2.fastq samples/subset_50/sample_021_rrna_removed_R2.fastq samples/subset_50/sample_097_rrna_removed_R2.fastq samples/subset_50/sample_032_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_6/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_6'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_6'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_6/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_6/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_6/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_6'
+
+
+# Group: group_groups_size_25_group_7 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_7'
+cat samples/subset_50/sample_138_rrna_removed_R1.fastq samples/subset_50/sample_118_rrna_removed_R1.fastq samples/subset_50/sample_012_rrna_removed_R1.fastq samples/subset_50/sample_068_rrna_removed_R1.fastq samples/subset_50/sample_089_rrna_removed_R1.fastq samples/subset_50/sample_092_rrna_removed_R1.fastq samples/subset_50/sample_025_rrna_removed_R1.fastq samples/subset_50/sample_098_rrna_removed_R1.fastq samples/subset_50/sample_183_rrna_removed_R1.fastq samples/subset_50/sample_191_rrna_removed_R1.fastq samples/subset_50/sample_087_rrna_removed_R1.fastq samples/subset_50/sample_182_rrna_removed_R1.fastq samples/subset_50/sample_040_rrna_removed_R1.fastq samples/subset_50/sample_169_rrna_removed_R1.fastq samples/subset_50/sample_088_rrna_removed_R1.fastq samples/subset_50/sample_186_rrna_removed_R1.fastq samples/subset_50/sample_041_rrna_removed_R1.fastq samples/subset_50/sample_002_rrna_removed_R1.fastq samples/subset_50/sample_072_rrna_removed_R1.fastq samples/subset_50/sample_151_rrna_removed_R1.fastq samples/subset_50/sample_115_rrna_removed_R1.fastq samples/subset_50/sample_057_rrna_removed_R1.fastq samples/subset_50/sample_108_rrna_removed_R1.fastq samples/subset_50/sample_192_rrna_removed_R1.fastq samples/subset_50/sample_167_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_7/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_7'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_7'
+cat samples/subset_50/sample_138_rrna_removed_R2.fastq samples/subset_50/sample_118_rrna_removed_R2.fastq samples/subset_50/sample_012_rrna_removed_R2.fastq samples/subset_50/sample_068_rrna_removed_R2.fastq samples/subset_50/sample_089_rrna_removed_R2.fastq samples/subset_50/sample_092_rrna_removed_R2.fastq samples/subset_50/sample_025_rrna_removed_R2.fastq samples/subset_50/sample_098_rrna_removed_R2.fastq samples/subset_50/sample_183_rrna_removed_R2.fastq samples/subset_50/sample_191_rrna_removed_R2.fastq samples/subset_50/sample_087_rrna_removed_R2.fastq samples/subset_50/sample_182_rrna_removed_R2.fastq samples/subset_50/sample_040_rrna_removed_R2.fastq samples/subset_50/sample_169_rrna_removed_R2.fastq samples/subset_50/sample_088_rrna_removed_R2.fastq samples/subset_50/sample_186_rrna_removed_R2.fastq samples/subset_50/sample_041_rrna_removed_R2.fastq samples/subset_50/sample_002_rrna_removed_R2.fastq samples/subset_50/sample_072_rrna_removed_R2.fastq samples/subset_50/sample_151_rrna_removed_R2.fastq samples/subset_50/sample_115_rrna_removed_R2.fastq samples/subset_50/sample_057_rrna_removed_R2.fastq samples/subset_50/sample_108_rrna_removed_R2.fastq samples/subset_50/sample_192_rrna_removed_R2.fastq samples/subset_50/sample_167_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_7/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_7'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_7'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_7/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_7/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_7/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_7'
+
+
+# Group: group_groups_size_25_group_8 (25 samples)
+
+# Step 1: Concatenate 25 R1 files
+echo 'Running: concat_r1_group_groups_size_25_group_8'
+cat samples/subset_50/sample_051_rrna_removed_R1.fastq samples/subset_50/sample_144_rrna_removed_R1.fastq samples/subset_50/sample_198_rrna_removed_R1.fastq samples/subset_50/sample_155_rrna_removed_R1.fastq samples/subset_50/sample_130_rrna_removed_R1.fastq samples/subset_50/sample_060_rrna_removed_R1.fastq samples/subset_50/sample_056_rrna_removed_R1.fastq samples/subset_50/sample_024_rrna_removed_R1.fastq samples/subset_50/sample_008_rrna_removed_R1.fastq samples/subset_50/sample_009_rrna_removed_R1.fastq samples/subset_50/sample_109_rrna_removed_R1.fastq samples/subset_50/sample_152_rrna_removed_R1.fastq samples/subset_50/sample_023_rrna_removed_R1.fastq samples/subset_50/sample_140_rrna_removed_R1.fastq samples/subset_50/sample_174_rrna_removed_R1.fastq samples/subset_50/sample_027_rrna_removed_R1.fastq samples/subset_50/sample_189_rrna_removed_R1.fastq samples/subset_50/sample_036_rrna_removed_R1.fastq samples/subset_50/sample_058_rrna_removed_R1.fastq samples/subset_50/sample_063_rrna_removed_R1.fastq samples/subset_50/sample_071_rrna_removed_R1.fastq samples/subset_50/sample_190_rrna_removed_R1.fastq samples/subset_50/sample_007_rrna_removed_R1.fastq samples/subset_50/sample_029_rrna_removed_R1.fastq samples/subset_50/sample_164_rrna_removed_R1.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_8/concatenated_R1.fastq
+echo 'Completed: concat_r1_group_groups_size_25_group_8'
+
+
+# Step 2: Concatenate 25 R2 files
+echo 'Running: concat_r2_group_groups_size_25_group_8'
+cat samples/subset_50/sample_051_rrna_removed_R2.fastq samples/subset_50/sample_144_rrna_removed_R2.fastq samples/subset_50/sample_198_rrna_removed_R2.fastq samples/subset_50/sample_155_rrna_removed_R2.fastq samples/subset_50/sample_130_rrna_removed_R2.fastq samples/subset_50/sample_060_rrna_removed_R2.fastq samples/subset_50/sample_056_rrna_removed_R2.fastq samples/subset_50/sample_024_rrna_removed_R2.fastq samples/subset_50/sample_008_rrna_removed_R2.fastq samples/subset_50/sample_009_rrna_removed_R2.fastq samples/subset_50/sample_109_rrna_removed_R2.fastq samples/subset_50/sample_152_rrna_removed_R2.fastq samples/subset_50/sample_023_rrna_removed_R2.fastq samples/subset_50/sample_140_rrna_removed_R2.fastq samples/subset_50/sample_174_rrna_removed_R2.fastq samples/subset_50/sample_027_rrna_removed_R2.fastq samples/subset_50/sample_189_rrna_removed_R2.fastq samples/subset_50/sample_036_rrna_removed_R2.fastq samples/subset_50/sample_058_rrna_removed_R2.fastq samples/subset_50/sample_063_rrna_removed_R2.fastq samples/subset_50/sample_071_rrna_removed_R2.fastq samples/subset_50/sample_190_rrna_removed_R2.fastq samples/subset_50/sample_007_rrna_removed_R2.fastq samples/subset_50/sample_029_rrna_removed_R2.fastq samples/subset_50/sample_164_rrna_removed_R2.fastq > results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_8/concatenated_R2.fastq
+echo 'Completed: concat_r2_group_groups_size_25_group_8'
+
+
+# Step 3: MEGAHIT assembly of concatenated reads (25 samples)
+echo 'Running: megahit_group_groups_size_25_group_8'
+megahit \
+    -1 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_8/concatenated_R1.fastq \
+    -2 results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_8/concatenated_R2.fastq \
+    -o results/focused_assemblies/stage1_megahit/focused_strategies_groups_size_25/group_groups_size_25_group_8/megahit_assembly \
+    --min-contig-len 500 \
+    --k-list 45,65,85,105,125,145,165,185,205,225 \
+    --min-count 2 \
+    -t 20 \
+    --memory 214748364800
+echo 'Completed: megahit_group_groups_size_25_group_8'
+
+
+echo "End time: $(date)"
+echo "stage1 completed for strategy: focused_strategies_groups_size_25"

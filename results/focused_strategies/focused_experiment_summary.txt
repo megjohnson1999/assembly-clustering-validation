@@ -1,0 +1,46 @@
+Focused Viral Metagenome Assembly Experiment
+============================================================
+
+Research Question:
+What is the optimal co-assembly group size for viral metagenomes?
+(Balancing low-abundance recovery against strain-mixing artifacts)
+
+Literature-Informed Design:
+- Total samples: 200
+- Strategies: 5 (down from 17 in original design)
+- Cost reduction: ~85% (1,500 vs 10,000 CPU hours)
+- Statistical power: High with {len(samples)} samples
+
+Strategies Created:
+
+1. Individual Assembly (Baseline)
+   - 200 separate assemblies
+   - Literature: Maximum strain resolution
+   - File: results/focused_strategies/individual/assembly_recommendations.json
+
+2. Groups of 5 Samples
+   - 40 groups, 200 grouped
+   - Literature: Optimal pool size (Nature 2021)
+   - File: results/focused_strategies/groups_size_5/assembly_recommendations.json
+
+3. Groups of 12 Samples
+   - 17 groups, 200 grouped
+   - Literature: Small-medium group size
+   - File: results/focused_strategies/groups_size_12/assembly_recommendations.json
+
+4. Groups of 25 Samples
+   - 8 groups, 200 grouped
+   - Literature: Medium group balancing coverage vs diversity
+   - File: results/focused_strategies/groups_size_25/assembly_recommendations.json
+
+5. Global Assembly
+   - All 200 samples together
+   - Literature: Maximum low-abundance recovery
+   - File: results/focused_strategies/global/assembly_recommendations.json
+
+Next Steps:
+1. Generate assembly commands for all 5 strategies
+2. Run MEGAHIT → Flye pipeline
+3. Analyze with CheckV for viral genome completeness
+4. Compare strain diversity vs low-abundance recovery
+5. Determine optimal group size for viral metagenomes

@@ -1,0 +1,543 @@
+{
+  "strategy": "groups_size_5",
+  "tool": "focused_grouping",
+  "confidence": 0.8,
+  "groups": [
+    {
+      "group_id": "groups_size_5_group_1",
+      "samples": [
+        "sample_067",
+        "sample_188",
+        "sample_102",
+        "sample_194",
+        "sample_112"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_2",
+      "samples": [
+        "sample_122",
+        "sample_014",
+        "sample_003",
+        "sample_065",
+        "sample_045"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_3",
+      "samples": [
+        "sample_137",
+        "sample_171",
+        "sample_129",
+        "sample_077",
+        "sample_159"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_4",
+      "samples": [
+        "sample_168",
+        "sample_046",
+        "sample_131",
+        "sample_031",
+        "sample_004"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_5",
+      "samples": [
+        "sample_160",
+        "sample_016",
+        "sample_043",
+        "sample_127",
+        "sample_187"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_6",
+      "samples": [
+        "sample_163",
+        "sample_048",
+        "sample_111",
+        "sample_006",
+        "sample_195"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_7",
+      "samples": [
+        "sample_038",
+        "sample_123",
+        "sample_013",
+        "sample_037",
+        "sample_154"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_8",
+      "samples": [
+        "sample_070",
+        "sample_062",
+        "sample_196",
+        "sample_033",
+        "sample_173"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_9",
+      "samples": [
+        "sample_172",
+        "sample_061",
+        "sample_011",
+        "sample_145",
+        "sample_161"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_10",
+      "samples": [
+        "sample_053",
+        "sample_126",
+        "sample_107",
+        "sample_074",
+        "sample_114"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_11",
+      "samples": [
+        "sample_106",
+        "sample_096",
+        "sample_104",
+        "sample_146",
+        "sample_044"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_12",
+      "samples": [
+        "sample_001",
+        "sample_162",
+        "sample_193",
+        "sample_017",
+        "sample_081"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_13",
+      "samples": [
+        "sample_103",
+        "sample_039",
+        "sample_157",
+        "sample_177",
+        "sample_136"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_14",
+      "samples": [
+        "sample_079",
+        "sample_116",
+        "sample_020",
+        "sample_015",
+        "sample_178"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_15",
+      "samples": [
+        "sample_147",
+        "sample_180",
+        "sample_066",
+        "sample_085",
+        "sample_166"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_16",
+      "samples": [
+        "sample_047",
+        "sample_105",
+        "sample_080",
+        "sample_055",
+        "sample_197"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_17",
+      "samples": [
+        "sample_086",
+        "sample_119",
+        "sample_110",
+        "sample_134",
+        "sample_143"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_18",
+      "samples": [
+        "sample_034",
+        "sample_019",
+        "sample_141",
+        "sample_124",
+        "sample_176"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_19",
+      "samples": [
+        "sample_064",
+        "sample_084",
+        "sample_149",
+        "sample_101",
+        "sample_156"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_20",
+      "samples": [
+        "sample_073",
+        "sample_028",
+        "sample_185",
+        "sample_113",
+        "sample_052"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_21",
+      "samples": [
+        "sample_175",
+        "sample_005",
+        "sample_030",
+        "sample_184",
+        "sample_100"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_22",
+      "samples": [
+        "sample_099",
+        "sample_132",
+        "sample_125",
+        "sample_199",
+        "sample_135"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_23",
+      "samples": [
+        "sample_179",
+        "sample_121",
+        "sample_035",
+        "sample_049",
+        "sample_170"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_24",
+      "samples": [
+        "sample_139",
+        "sample_150",
+        "sample_133",
+        "sample_128",
+        "sample_022"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_25",
+      "samples": [
+        "sample_082",
+        "sample_078",
+        "sample_010",
+        "sample_083",
+        "sample_165"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_26",
+      "samples": [
+        "sample_120",
+        "sample_090",
+        "sample_069",
+        "sample_054",
+        "sample_091"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_27",
+      "samples": [
+        "sample_095",
+        "sample_042",
+        "sample_094",
+        "sample_117",
+        "sample_200"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_28",
+      "samples": [
+        "sample_158",
+        "sample_026",
+        "sample_181",
+        "sample_148",
+        "sample_075"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_29",
+      "samples": [
+        "sample_059",
+        "sample_153",
+        "sample_018",
+        "sample_050",
+        "sample_093"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_30",
+      "samples": [
+        "sample_076",
+        "sample_142",
+        "sample_021",
+        "sample_097",
+        "sample_032"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_31",
+      "samples": [
+        "sample_138",
+        "sample_118",
+        "sample_012",
+        "sample_068",
+        "sample_089"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_32",
+      "samples": [
+        "sample_092",
+        "sample_025",
+        "sample_098",
+        "sample_183",
+        "sample_191"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_33",
+      "samples": [
+        "sample_087",
+        "sample_182",
+        "sample_040",
+        "sample_169",
+        "sample_088"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_34",
+      "samples": [
+        "sample_186",
+        "sample_041",
+        "sample_002",
+        "sample_072",
+        "sample_151"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_35",
+      "samples": [
+        "sample_115",
+        "sample_057",
+        "sample_108",
+        "sample_192",
+        "sample_167"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_36",
+      "samples": [
+        "sample_051",
+        "sample_144",
+        "sample_198",
+        "sample_155",
+        "sample_130"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_37",
+      "samples": [
+        "sample_060",
+        "sample_056",
+        "sample_024",
+        "sample_008",
+        "sample_009"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_38",
+      "samples": [
+        "sample_109",
+        "sample_152",
+        "sample_023",
+        "sample_140",
+        "sample_174"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_39",
+      "samples": [
+        "sample_027",
+        "sample_189",
+        "sample_036",
+        "sample_058",
+        "sample_063"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_5_group_40",
+      "samples": [
+        "sample_071",
+        "sample_190",
+        "sample_007",
+        "sample_029",
+        "sample_164"
+      ],
+      "size": 5,
+      "assembly_strategy": "grouped"
+    }
+  ],
+  "individual_samples": [],
+  "summary": {
+    "total_samples": 200,
+    "grouped_samples": 200,
+    "individual_samples": 0,
+    "total_groups": 40,
+    "target_group_size": 5,
+    "actual_group_sizes": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  "parameters": {
+    "group_size": 5,
+    "strategy_name": "groups_size_5",
+    "literature_basis": "Optimal pool size from medical testing research (Nature 2021)",
+    "seed": 42
+  }
+}

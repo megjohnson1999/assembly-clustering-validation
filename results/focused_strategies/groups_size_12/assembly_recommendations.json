@@ -1,0 +1,359 @@
+{
+  "strategy": "groups_size_12",
+  "tool": "focused_grouping",
+  "confidence": 0.8,
+  "groups": [
+    {
+      "group_id": "groups_size_12_group_1",
+      "samples": [
+        "sample_067",
+        "sample_188",
+        "sample_102",
+        "sample_194",
+        "sample_112",
+        "sample_122",
+        "sample_014",
+        "sample_003",
+        "sample_065",
+        "sample_045",
+        "sample_137",
+        "sample_171"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_2",
+      "samples": [
+        "sample_129",
+        "sample_077",
+        "sample_159",
+        "sample_168",
+        "sample_046",
+        "sample_131",
+        "sample_031",
+        "sample_004",
+        "sample_160",
+        "sample_016",
+        "sample_043",
+        "sample_127"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_3",
+      "samples": [
+        "sample_187",
+        "sample_163",
+        "sample_048",
+        "sample_111",
+        "sample_006",
+        "sample_195",
+        "sample_038",
+        "sample_123",
+        "sample_013",
+        "sample_037",
+        "sample_154",
+        "sample_070"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_4",
+      "samples": [
+        "sample_062",
+        "sample_196",
+        "sample_033",
+        "sample_173",
+        "sample_172",
+        "sample_061",
+        "sample_011",
+        "sample_145",
+        "sample_161",
+        "sample_053",
+        "sample_126",
+        "sample_107"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_5",
+      "samples": [
+        "sample_074",
+        "sample_114",
+        "sample_106",
+        "sample_096",
+        "sample_104",
+        "sample_146",
+        "sample_044",
+        "sample_001",
+        "sample_162",
+        "sample_193",
+        "sample_017",
+        "sample_081"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_6",
+      "samples": [
+        "sample_103",
+        "sample_039",
+        "sample_157",
+        "sample_177",
+        "sample_136",
+        "sample_079",
+        "sample_116",
+        "sample_020",
+        "sample_015",
+        "sample_178",
+        "sample_147",
+        "sample_180"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_7",
+      "samples": [
+        "sample_066",
+        "sample_085",
+        "sample_166",
+        "sample_047",
+        "sample_105",
+        "sample_080",
+        "sample_055",
+        "sample_197",
+        "sample_086",
+        "sample_119",
+        "sample_110",
+        "sample_134"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_8",
+      "samples": [
+        "sample_143",
+        "sample_034",
+        "sample_019",
+        "sample_141",
+        "sample_124",
+        "sample_176",
+        "sample_064",
+        "sample_084",
+        "sample_149",
+        "sample_101",
+        "sample_156",
+        "sample_073"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_9",
+      "samples": [
+        "sample_028",
+        "sample_185",
+        "sample_113",
+        "sample_052",
+        "sample_175",
+        "sample_005",
+        "sample_030",
+        "sample_184",
+        "sample_100",
+        "sample_099",
+        "sample_132",
+        "sample_125"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_10",
+      "samples": [
+        "sample_199",
+        "sample_135",
+        "sample_179",
+        "sample_121",
+        "sample_035",
+        "sample_049",
+        "sample_170",
+        "sample_139",
+        "sample_150",
+        "sample_133",
+        "sample_128",
+        "sample_022"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_11",
+      "samples": [
+        "sample_082",
+        "sample_078",
+        "sample_010",
+        "sample_083",
+        "sample_165",
+        "sample_120",
+        "sample_090",
+        "sample_069",
+        "sample_054",
+        "sample_091",
+        "sample_095",
+        "sample_042"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_12",
+      "samples": [
+        "sample_094",
+        "sample_117",
+        "sample_200",
+        "sample_158",
+        "sample_026",
+        "sample_181",
+        "sample_148",
+        "sample_075",
+        "sample_059",
+        "sample_153",
+        "sample_018",
+        "sample_050"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_13",
+      "samples": [
+        "sample_093",
+        "sample_076",
+        "sample_142",
+        "sample_021",
+        "sample_097",
+        "sample_032",
+        "sample_138",
+        "sample_118",
+        "sample_012",
+        "sample_068",
+        "sample_089",
+        "sample_092"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_14",
+      "samples": [
+        "sample_025",
+        "sample_098",
+        "sample_183",
+        "sample_191",
+        "sample_087",
+        "sample_182",
+        "sample_040",
+        "sample_169",
+        "sample_088",
+        "sample_186",
+        "sample_041",
+        "sample_002"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_15",
+      "samples": [
+        "sample_072",
+        "sample_151",
+        "sample_115",
+        "sample_057",
+        "sample_108",
+        "sample_192",
+        "sample_167",
+        "sample_051",
+        "sample_144",
+        "sample_198",
+        "sample_155",
+        "sample_130"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_16",
+      "samples": [
+        "sample_060",
+        "sample_056",
+        "sample_024",
+        "sample_008",
+        "sample_009",
+        "sample_109",
+        "sample_152",
+        "sample_023",
+        "sample_140",
+        "sample_174",
+        "sample_027",
+        "sample_189"
+      ],
+      "size": 12,
+      "assembly_strategy": "grouped"
+    },
+    {
+      "group_id": "groups_size_12_group_17",
+      "samples": [
+        "sample_036",
+        "sample_058",
+        "sample_063",
+        "sample_071",
+        "sample_190",
+        "sample_007",
+        "sample_029",
+        "sample_164"
+      ],
+      "size": 8,
+      "assembly_strategy": "grouped"
+    }
+  ],
+  "individual_samples": [],
+  "summary": {
+    "total_samples": 200,
+    "grouped_samples": 200,
+    "individual_samples": 0,
+    "total_groups": 17,
+    "target_group_size": 12,
+    "actual_group_sizes": [
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      8
+    ]
+  },
+  "parameters": {
+    "group_size": 12,
+    "strategy_name": "groups_size_12",
+    "literature_basis": "Small-medium groups: ~17 groups for 200 samples",
+    "seed": 42
+  }
+}
