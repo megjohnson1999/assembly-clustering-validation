@@ -492,7 +492,8 @@ def process_strategy(strategy_file, samples_dir, base_output_dir, scripts_dir):
                 f.write(f"# Submit all {len(group_jobs)} parallel group jobs for {strategy_name}\n\n")
                 for group_job in group_jobs:
                     group_id = group_job['group_id']
-                    f.write(f"sbatch stage1_{strategy_name}_group_{group_id}.sh\n")
+                    script_path = scripts_path / f"stage1_{strategy_name}_group_{group_id}.sh"
+                    f.write(f"sbatch {script_path}\n")
             master_script_path.chmod(0o755)  # Make executable
 
         else:
