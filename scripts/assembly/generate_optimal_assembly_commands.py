@@ -270,13 +270,14 @@ def generate_stage3_commands(stage2_command, base_output_dir, strategy_name):
 
     # Flye meta-assembly command
     flye_cmd = f"""flye \\
+    --subassemblies {input_file} \\
+    --out-dir {output_dir} \\
     --meta \\
+    --plasmids \\
     --asm-coverage 50 \\
     --genome-size 100m \\
-    --out-dir {output_dir} \\
     --threads 20 \\
-    --iterations 3 \\
-    --contigs {input_file}"""
+    --iterations 3"""
 
     return {
         'name': f"flye_{strategy_name}",
