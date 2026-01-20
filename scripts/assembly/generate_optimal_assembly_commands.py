@@ -69,9 +69,9 @@ def generate_concatenation_and_megahit_commands(sample_pairs, output_dir, job_na
             r1_files.append(r1)
             r2_files.append(r2)
 
-        # Create concatenated file paths
-        concat_r1 = output_dir / "concatenated_R1.fastq"
-        concat_r2 = output_dir / "concatenated_R2.fastq"
+        # Create concatenated file paths (use absolute paths)
+        concat_r1 = output_dir.absolute() / "concatenated_R1.fastq"
+        concat_r2 = output_dir.absolute() / "concatenated_R2.fastq"
 
         # Concatenation commands
         concat_r1_cmd = f"cat {' '.join(r1_files)} > {concat_r1}"
@@ -89,11 +89,12 @@ def generate_concatenation_and_megahit_commands(sample_pairs, output_dir, job_na
             'description': f"Concatenate {len(r2_files)} R2 files"
         })
 
-        # MEGAHIT command on concatenated files
+        # MEGAHIT command on concatenated files (use absolute paths)
+        megahit_output_dir = output_dir.absolute() / "megahit_assembly"
         megahit_cmd = f"""megahit \\
     -1 {concat_r1} \\
     -2 {concat_r2} \\
-    -o {output_dir}/megahit_assembly \\
+    -o {megahit_output_dir} \\
     --min-contig-len 500 \\
     --k-list 45,65,85,105,125,145,165,185,205,225 \\
     --min-count 2 \\
@@ -104,16 +105,17 @@ def generate_concatenation_and_megahit_commands(sample_pairs, output_dir, job_na
             'name': f"megahit_{job_name}",
             'command': megahit_cmd,
             'description': f"MEGAHIT assembly of concatenated reads ({len(sample_pairs)} samples)",
-            'output': output_dir / "megahit_assembly" / "final.contigs.fa"
+            'output': megahit_output_dir / "final.contigs.fa"
         })
 
     else:
-        # Single sample - no concatenation needed
+        # Single sample - no concatenation needed (use absolute paths)
         r1, r2 = sample_pairs[0]
+        megahit_output_dir = output_dir.absolute() / "megahit_assembly"
         megahit_cmd = f"""megahit \\
     -1 {r1} \\
     -2 {r2} \\
-    -o {output_dir}/megahit_assembly \\
+    -o {megahit_output_dir} \\
     --min-contig-len 500 \\
     --k-list 45,65,85,105,125,145,165,185,205,225 \\
     --min-count 2 \\
@@ -124,7 +126,7 @@ def generate_concatenation_and_megahit_commands(sample_pairs, output_dir, job_na
             'name': f"megahit_{job_name}",
             'command': megahit_cmd,
             'description': f"MEGAHIT assembly of single sample",
-            'output': output_dir / "megahit_assembly" / "final.contigs.fa"
+            'output': megahit_output_dir / "final.contigs.fa"
         })
 
     return commands
@@ -245,7 +247,7 @@ def generate_stage2_commands(stage1_commands, base_output_dir, strategy_name, st
     if not input_files:
         return None
 
-    output_file = stage2_dir / "concatenated_contigs.fa"
+    output_file = stage2_dir.absolute() / "concatenated_contigs.fa"
 
     # Concatenation with unique contig IDs (matching Hecatomb approach)
     # This prevents duplicate sequence IDs that cause Flye errors
@@ -279,7 +281,7 @@ def generate_stage3_commands(stage2_command, base_output_dir, strategy_name):
     stage3_dir.mkdir(parents=True, exist_ok=True)
 
     input_file = stage2_command['output']
-    output_dir = stage3_dir / "flye_assembly"
+    output_dir = stage3_dir.absolute() / "flye_assembly"
 
     # Flye meta-assembly command (matching Hecatomb parameters)
     flye_cmd = f"""flye \\
@@ -388,11 +390,23 @@ echo "MEGAHIT completed for sample: $SAMPLE_ID"
 """)
         else:
             # Regular commands (for grouped assemblies with concatenation)
+            # Extract and create output directory for group jobs
+            if commands and isinstance(commands[0], dict) and 'name' in commands[0] and 'concat_r1_' in commands[0]['name']:
+                # This is a group job - extract output directory from first concatenation command
+                concat_cmd = commands[0]['command']
+                if '>' in concat_cmd:
+                    output_path = concat_cmd.split('>')[-1].strip()
+                    output_dir = str(Path(output_path).parent)
+                    f.write(f"\n# Create group output directory\n")
+                    f.write(f"echo 'Creating output directory: {output_dir}'\n")
+                    f.write(f"mkdir -p {output_dir}\n\n")
+
             for i, cmd_info in enumerate(commands):
                 if isinstance(cmd_info, dict):
                     if 'commands' in cmd_info:
                         # Multiple commands for this group (concatenation approach)
                         f.write(f"\n# Group: {cmd_info['name']} ({cmd_info.get('samples_count', '?')} samples)\n")
+
                         for j, subcmd in enumerate(cmd_info['commands']):
                             f.write(f"\n# Step {j+1}: {subcmd.get('description', subcmd['name'])}\n")
                             f.write(f"echo 'Running: {subcmd['name']}'\n")
