@@ -12,16 +12,18 @@
 source /ref/sahlab/software/miniforge3/bin/activate
 conda activate snakemake_tutorial
 
+# Define base directory
+BASE_DIR="/scratch/sahlab/Megan/assembly-clustering-validation/metagrouper_validation"
+
 # Create output directories
 mkdir -p logs
-mkdir -p results/analysis
+mkdir -p "${BASE_DIR}/results/analysis"
 
 echo "Running seqkit stats on all 5 assemblies"
 echo "Job ID: $SLURM_JOB_ID"
 echo "Start time: $(date)"
 
 # Define assembly paths (using absolute paths)
-BASE_DIR="/ref/sahlab/megan.j/metagrouper_validation"
 ASSEMBLIES=(
     "${BASE_DIR}/results/focused_assemblies/stage3_flye/focused_strategies_individual/flye_assembly/assembly.fasta"
     "${BASE_DIR}/results/focused_assemblies/stage3_flye/focused_strategies_groups_size_5/flye_assembly/assembly.fasta"

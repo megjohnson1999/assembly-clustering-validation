@@ -22,7 +22,7 @@ echo "Array Task ID: $SLURM_ARRAY_TASK_ID"
 echo "Start time: $(date)"
 
 # Define base directories (using absolute paths)
-BASE_DIR="/ref/sahlab/megan.j/metagrouper_validation"
+BASE_DIR="/scratch/sahlab/Megan/assembly-clustering-validation/metagrouper_validation"
 CHECKV_DB="/ref/sahlab/data/viral_analysis_DBs/checkV_DB/checkv-db-v1.5"
 OUTPUT_BASE="${BASE_DIR}/results/analysis/checkv"
 
