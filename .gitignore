@@ -72,23 +72,11 @@ results/analysis/checkv/**/tmp/
 !results/**/*.txt
 !results/analysis/checkv/**/quality_summary.tsv
 
-# SLURM logs
-slurm-*.out
-slurm-*.err
-logs/slurm_*
-logs/*.out
-logs/*.err
+# All logs
+logs/
 *.log
-
-# Job-specific logs in root (sourmash, etc.)
-sourmash_*.out
-sourmash_*.err
-*_[0-9]*.out
-*_[0-9]*.err
-
-# Keep error logs and important logs
-!logs/experiment_*.log
-!logs/error_*.log
+*.out
+*.err
 
 # Temporary files
 *.tmp
