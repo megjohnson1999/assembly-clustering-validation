@@ -120,7 +120,7 @@ Larger co-assembly groups hurt viral assembly quality because:
 
 ### Dataset
 - 200 viral metagenomic samples (paired-end reads)
-- Source: [describe your dataset source]
+- Source: IBD (inflammatory bowel disease) stool samples
 
 ### Assembly Workflow
 1. **Stage 1:** MEGAHIT assembly per group
