@@ -55,17 +55,36 @@ results/*/assembly_output/
 results/*/megahit_*/
 results/*/spades_*/
 results/*/flye_*/
+results/focused_assemblies/
+
+# CheckV large outputs (keep quality_summary.tsv only)
+results/analysis/checkv/**/proviruses.fna
+results/analysis/checkv/**/viruses.fna
+results/analysis/checkv/**/complete_genomes.tsv
+results/analysis/checkv/**/contamination.tsv
+results/analysis/checkv/**/tmp/
 
 # Keep important result summaries
 !results/**/summary.txt
 !results/**/*.json
 !results/**/*.csv
+!results/**/*.tsv
 !results/**/*.txt
+!results/analysis/checkv/**/quality_summary.tsv
 
-# SLURM logs (too numerous, but keep recent ones)
+# SLURM logs
 slurm-*.out
+slurm-*.err
 logs/slurm_*
+logs/*.out
+logs/*.err
 *.log
+
+# Job-specific logs in root (sourmash, etc.)
+sourmash_*.out
+sourmash_*.err
+*_[0-9]*.out
+*_[0-9]*.err
 
 # Keep error logs and important logs
 !logs/experiment_*.log
