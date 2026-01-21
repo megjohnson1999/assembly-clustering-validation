@@ -23,23 +23,23 @@
 - Multiple similarity thresholds
 
 **Conclusion:** K-mer clustering doesn't work for viral metagenomics because:
-- Viral communities are highly diverse across samples
-- Low sequence similarity between samples (even from related environments)
+- Viral communities are highly diverse across s
+- Low sequence similarity between s (even from related environments)
 - K-mer signatures don't capture meaningful biological relationships in viral data
 
 ### Phase 2: Pivot to Group Size Study
 
 Since k-mer clustering failed, we asked a different question: **Does group size matter for viral assembly quality?**
 
-Tested 5 grouping strategies with 200 viral metagenomic samples using random grouping at different sizes:
+Tested 5 grouping strategies with 200 viral metagenomic s using random grouping at different sizes:
 
 | Strategy | Description |
 |----------|-------------|
-| individual | Each sample assembled separately, then meta-assembled |
-| groups_size_5 | Samples randomly grouped into sets of 5 |
-| groups_size_12 | Samples randomly grouped into sets of 12 |
-| groups_size_25 | Samples randomly grouped into sets of 25 |
-| global | All 200 samples co-assembled together |
+| individual | Each  assembled separately, then meta-assembled |
+| groups_size_5 | s randomly grouped into sets of 5 |
+| groups_size_12 | s randomly grouped into sets of 12 |
+| groups_size_25 | s randomly grouped into sets of 25 |
+| global | All 200 s co-assembled together |
 
 **Assembly workflow:** MEGAHIT (per group) → Concatenate → Flye meta-assembly
 
@@ -81,7 +81,7 @@ Tested 5 grouping strategies with 200 viral metagenomic samples using random gro
 ## Conclusions
 
 ### On K-mer Clustering
-1. **K-mer clustering does not work for viral metagenomics** - samples are too diverse to form meaningful clusters
+1. **K-mer clustering does not work for viral metagenomics** - s are too diverse to form meaningful clusters
 2. MetaGrouper and Sourmash both failed to produce usable groupings
 3. This is likely a fundamental limitation of k-mer approaches for viral data
 
@@ -94,7 +94,7 @@ Tested 5 grouping strategies with 200 viral metagenomic samples using random gro
 ### Biological Interpretation
 
 Larger co-assembly groups hurt viral assembly quality because:
-- **Strain diversity**: Viruses evolve rapidly; combining samples multiplies variant complexity
+- **Strain diversity**: Viruses evolve rapidly; combining s multiplies variant complexity
 - **Assembly graph conflicts**: Similar but non-identical sequences create unresolvable branches
 - **Diminishing returns**: Coverage gains are outweighed by complexity costs
 
@@ -108,19 +108,19 @@ Larger co-assembly groups hurt viral assembly quality because:
 | Prioritize assembly contiguity (N50) | Use individual assembly |
 | Simple workflow | Use individual assembly |
 
-### When to Group Samples
+### When to Group s
 
 | Scenario | Recommendation |
 |----------|----------------|
-| Same patient, multiple timepoints | Co-assemble (limit ~5 samples) |
-| Unrelated samples | Individual assembly |
+| Same patient, multiple timepoints | Co-assemble (limit ~5 s) |
+| Unrelated s | Individual assembly |
 | Any viral metagenomics project | **Don't use k-mer clustering** |
 
 ## Methods
 
 ### Dataset
-- 200 viral metagenomic samples (paired-end reads)
-- Source: IBD (inflammatory bowel disease) stool samples
+- 200 viral metagenomics (paired-end reads)
+- Source: IBD (inflammatory bowel disease) study stool samples
 
 ### Assembly Workflow
 1. **Stage 1:** MEGAHIT assembly per group
