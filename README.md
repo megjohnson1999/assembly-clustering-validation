@@ -1,52 +1,49 @@
-# MetaGrouper Assembly Clustering Validation
+# Viral Metagenome Assembly Clustering Validation
 
-**Research Question:** Does k-mer-based sample clustering produce better metagenomic assemblies than random grouping?
+**Original Research Question:** Does k-mer-based sample clustering produce better viral metagenomic assemblies than random grouping?
 
-## Overview
+**Answer:** K-mer clustering doesn't work for viral metagenomics data. After this discovery, we pivoted to testing group size effects and found that **individual assembly or small groups (~5 samples) produce the best results**.
 
-This repository contains a validation framework for testing whether MetaGrouper's k-mer clustering approach produces superior co-assemblies compared to random sample grouping. The experiment uses a staged assembly workflow (MEGAHIT → concatenate → Flye meta-assembly) to generate comparable final assemblies across different grouping strategies.
+## The Complete Story
 
-## Current Implementation
+### Phase 1: Attempting K-mer Clustering
 
-**What this tool does:**
-- ✅ Tests MetaGrouper k-mer clustering against 5 random grouping baselines
-- ✅ Implements staged assembly workflow matching hecatomb patterns
-- ✅ Runs efficiently on SLURM clusters (2-3 days vs weeks)
-- ✅ Generates statistical comparison of assembly quality metrics
-- ✅ Provides clear recommendation on clustering effectiveness
+**Goal:** Test whether grouping samples by k-mer similarity (MetaGrouper/Sourmash) improves viral assembly quality compared to random grouping.
 
-**Validation scope:**
-- **Sample size**: 50 paired-end metagenomic samples
-- **Clustering method**: MetaGrouper k-mer similarity (threshold=0.3)
-- **Assembly workflow**: MEGAHIT → concatenation → Flye meta-assembly
-- **Comparison**: 8 final meta-assemblies (Individual, Random×5, K-mer, Global)
+**What happened:**
 
-## Experimental Design
+| Tool | Result | Details |
+|------|--------|---------|
+| MetaGrouper | Failed | Memory errors, couldn't process viral metagenomic data |
+| Sourmash | No clusters formed | Even with very permissive similarity thresholds (0.1-0.5), no sample pairs were similar enough to cluster |
 
-**Four-condition comparison:**
-1. **Individual approach**: Each sample assembled separately, then meta-assembled
-2. **Random grouping**: 5 different random sample groupings (seeds 42-46)
-3. **K-mer clustering**: MetaGrouper similarity-based grouping
-4. **Global assembly**: All samples co-assembled together
+**Tested with:**
+- Initial: 25 samples
+- Expanded: 200 samples
+- Multiple similarity thresholds
 
-**Statistical approach:**
-- Multiple random baselines ensure robust null hypothesis testing
-- Assembly quality metrics: N50, total length, contig counts, completeness
-- Statistical significance testing with effect size calculations
+**Conclusion:** K-mer clustering doesn't work for viral metagenomics because:
+- Viral communities are highly diverse across samples
+- Low sequence similarity between samples (even from related environments)
+- K-mer signatures don't capture meaningful biological relationships in viral data
 
-## Results (January 2026)
+### Phase 2: Pivot to Group Size Study
 
-### Experiment: Effect of Group Size on Assembly Quality
+Since k-mer clustering failed, we asked a different question: **Does group size matter for viral assembly quality?**
 
-Tested 5 grouping strategies with 200 viral metagenomic samples using a staged assembly workflow (MEGAHIT → Flye meta-assembly):
+Tested 5 grouping strategies with 200 viral metagenomic samples using random grouping at different sizes:
 
 | Strategy | Description |
 |----------|-------------|
 | individual | Each sample assembled separately, then meta-assembled |
-| groups_size_5 | Samples grouped into sets of 5 |
-| groups_size_12 | Samples grouped into sets of 12 |
-| groups_size_25 | Samples grouped into sets of 25 |
-| global | All samples co-assembled together |
+| groups_size_5 | Samples randomly grouped into sets of 5 |
+| groups_size_12 | Samples randomly grouped into sets of 12 |
+| groups_size_25 | Samples randomly grouped into sets of 25 |
+| global | All 200 samples co-assembled together |
+
+**Assembly workflow:** MEGAHIT (per group) → Concatenate → Flye meta-assembly
+
+## Results (January 2026)
 
 ### Basic Assembly Metrics (seqkit stats)
 
@@ -70,23 +67,38 @@ Tested 5 grouping strategies with 200 viral metagenomic samples using a staged a
 
 ### Key Findings
 
-**Assembly quality generally decreases with group size, but with nuances:**
+**Assembly quality generally decreases with group size:**
 
 | Metric | Best Strategy | Worst Strategy | Trend |
 |--------|---------------|----------------|-------|
-| N50 | individual (3,063) | global (2,528) | ↓ with group size |
-| Avg contig length | individual (2,481) | global (2,301) | ↓ with group size |
-| Complete viral genomes | **groups_size_5 (204)** | global (152) | ↓ after size 5 |
-| Mean completeness | individual (7.66%) | global (6.70%) | ↓ with group size |
+| N50 | individual (3,063) | global (2,528) | Decreases with group size |
+| Avg contig length | individual (2,481) | global (2,301) | Decreases with group size |
+| Complete viral genomes | **groups_size_5 (204)** | global (152) | Decreases after size 5 |
+| Mean completeness | individual (7.66%) | global (6.70%) | Decreases with group size |
 
 **Trade-off:** Groups of 5 recover slightly more complete genomes (+4.6%) but with worse assembly contiguity.
 
-### Conclusions
+## Conclusions
 
-1. **Individual assembly and groups of ~5 perform best** for viral metagenomics
+### On K-mer Clustering
+1. **K-mer clustering does not work for viral metagenomics** - samples are too diverse to form meaningful clusters
+2. MetaGrouper and Sourmash both failed to produce usable groupings
+3. This is likely a fundamental limitation of k-mer approaches for viral data
+
+### On Group Size
+1. **Individual assembly or groups of ~5 perform best** for viral metagenomics
 2. **Global co-assembly performs worst** on every metric
 3. The extra contigs from larger groups represent fragmentation, not improved recovery
-4. Small groups may recover slightly more complete genomes at the cost of contiguity
+4. **Group size matters more than clustering method** (since clustering doesn't work anyway)
+
+### Biological Interpretation
+
+Larger co-assembly groups hurt viral assembly quality because:
+- **Strain diversity**: Viruses evolve rapidly; combining samples multiplies variant complexity
+- **Assembly graph conflicts**: Similar but non-identical sequences create unresolvable branches
+- **Diminishing returns**: Coverage gains are outweighed by complexity costs
+
+## Practical Recommendations
 
 ### Decision Framework
 
@@ -96,58 +108,28 @@ Tested 5 grouping strategies with 200 viral metagenomic samples using a staged a
 | Prioritize assembly contiguity (N50) | Use individual assembly |
 | Simple workflow | Use individual assembly |
 
-### Biological Interpretation
-
-Larger co-assembly groups hurt viral assembly quality because:
-- **Strain diversity**: Viruses evolve rapidly; combining samples multiplies variant complexity
-- **Assembly graph conflicts**: Similar but non-identical sequences create unresolvable branches
-- **Diminishing returns**: Coverage gains are outweighed by complexity costs
-
-### Practical Recommendations
+### When to Group Samples
 
 | Scenario | Recommendation |
 |----------|----------------|
 | Same patient, multiple timepoints | Co-assemble (limit ~5 samples) |
-| Known outbreak/transmission | Consider k-mer clustering with small groups |
 | Unrelated samples | Individual assembly |
+| Any viral metagenomics project | **Don't use k-mer clustering** |
 
----
+## Methods
 
-## Original Expected Outcomes
+### Dataset
+- 200 viral metagenomic samples (paired-end reads)
+- Source: [describe your dataset source]
 
-**Definitive answer to:** "Should I use k-mer clustering or is random grouping just as good?"
+### Assembly Workflow
+1. **Stage 1:** MEGAHIT assembly per group
+2. **Stage 2:** Concatenate contigs from groups
+3. **Stage 3:** Flye meta-assembly of concatenated contigs
 
-**Possible results:**
-- **Strong evidence**: K-mer clustering significantly outperforms random (p<0.05, large effect size)
-- **Marginal evidence**: Small but consistent improvements (cost/benefit decision needed)
-- **No evidence**: Random grouping performs equivalently (focus efforts elsewhere)
-
-## Current Limitations
-
-**This is a research validation, not a production tool:**
-- ⚠️ **Single clustering method**: Only tests MetaGrouper (not CONCOCT, MaxBin, etc.)
-- ⚠️ **Limited scale**: Validated on 50 samples (not 100-1000+ samples)
-- ⚠️ **Preliminary results**: Requires peer review and broader validation
-- ⚠️ **Specific workflow**: Designed for hecatomb-style staged assembly
-
-## Quick Start
-
-**Prerequisites:**
-- SLURM cluster with `metagrouper_env` and `coassembly_env`
-- MetaGrouper installed in `setup/metaGrouper/`
-- Paired-end metagenomic reads
-
-**Run validation:**
-```bash
-# Setup experiment workspace
-bash scripts/setup/setup_experiment_fixed.sh
-
-# Run complete validation (2-3 days)
-cd metagrouper_validation/
-bash scripts/setup/run_staged_experiment.sh
-
-# Results in: results/final_analysis/
-```
+### Quality Assessment
+- **Basic metrics:** seqkit stats (N50, contig counts, lengths)
+- **Viral quality:** CheckV (completeness, quality categories)
 
 ## Repository Structure
 
@@ -155,45 +137,32 @@ bash scripts/setup/run_staged_experiment.sh
 ├── scripts/
 │   ├── setup/           # Experimental setup and workflow orchestration
 │   ├── assembly/        # Assembly command generation and execution
-│   ├── analysis/        # Quality assessment and statistical analysis
+│   ├── analysis/        # Quality assessment (seqkit, CheckV, summarization)
 │   └── utils/           # Sample selection and grouping utilities
-├── configs/             # Experimental parameters (documentation)
-├── setup/               # MetaGrouper installation location
-└── README.md           # This file
+├── metagrouper_validation/
+│   └── results/
+│       └── analysis/    # Output metrics and summaries
+├── focused_assembly_scripts/  # SLURM scripts for each strategy
+└── README.md
 ```
 
 ## Research Context
 
-**Status**: Active validation study (January 2026)
-**Institution**: Sahlab computational biology research
-**Use case**: Method validation for viral metagenomic assembly strategies
-
-**This framework provides:**
-- Reproducible methodology for testing co-assembly strategies
-- Statistical framework for comparing clustering approaches
-- Working example that can be extended to other clustering tools
-- Foundation for scaling to larger sample sizes
-
-## Future Development
-
-**Planned enhancements:**
-- 🔄 Support for multiple clustering methods (CONCOCT, MaxBin2, VAMB)
-- 🔄 Scaling validation to 100-1000+ samples
-- 🔄 CheckV integration for viral genome recovery analysis
-- 🔄 Additional assembly workflows (SPAdes, Unicycler)
-- 🔄 Publication and community peer review
-
-**Contributing**: This is currently a single-researcher project. Contact for collaboration opportunities.
+**Status:** Completed (January 2026)
+**Institution:** Sahlab computational biology research
+**Use case:** Method validation for viral metagenomic assembly strategies
 
 ## Citation
 
 ```
-Assembly Clustering Validation Framework (2026)
+Viral Metagenome Assembly Clustering Validation (2026)
 Sahlab Computational Biology
 GitHub: megjohnson1999/assembly-clustering-validation
-Status: Research validation - results pending peer review
+
+Key finding: K-mer clustering fails for viral metagenomics;
+individual assembly or small groups (~5) produce optimal results.
 ```
 
 ---
 
-**Key insight**: This framework definitively tests whether k-mer clustering solves a real problem in metagenomic assembly, providing evidence-based guidance for method selection.
+**Bottom line:** Don't waste time on k-mer clustering for viral metagenomics. Use individual assembly or small random groups of ~5 samples.
